@@ -1,0 +1,34 @@
+version: v2
+managed:
+  enabled: true
+
+plugins:
+  - remote: buf.build/bufbuild/es
+    out: sdk/ts/src/generated
+    opt:
+      - target=ts
+      - import_extension=js
+      - json_types=true
+
+  - remote: buf.build/protocolbuffers/python
+    out: sdk/py/
+
+  - remote: buf.build/protocolbuffers/pyi:v33.2
+    out: sdk/py/
+
+  - remote: buf.build/bufbuild/protoschema-jsonschema:v0.5.2
+    out: ./jsonschema/
+    opt:
+      - target=proto-strict-bundle
+      - additional_properties=true
+
+  # - remote: buf.build/community/sudorandom-connect-openapi:v0.21.3
+  #   out: gen
+  #   opt:
+  #   - base=openapi.base.yaml
+  #   - features=connectrpc;google.api.http;gnostic
+
+  - local: ["go", "run", "github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@v1.5.1"]
+    strategy: all
+    out: docs
+    opt: data-structure-doc.tmpl,data-structure.md

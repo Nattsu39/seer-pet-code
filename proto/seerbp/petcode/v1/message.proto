@@ -1,0 +1,208 @@
+syntax = "proto3";
+
+package seerbp.petcode.v1;
+
+// 精灵六项数值对象
+message PetAbilityValue {
+  // 体力值
+  int32 hp = 1;
+  // 攻击值
+  int32 attack = 2;
+  // 防御值
+  int32 defense = 3;
+  // 特攻值
+  int32 special_attack = 4;
+  // 特防值
+  int32 special_defense = 5;
+  // 速度值
+  int32 speed = 6;
+}
+
+// 精灵额外加成项，例如战队加成，年费加成等
+message PetAbilityBonus {
+  // 精灵额外能力值类型
+  enum Type {
+    TYPE_UNSPECIFIED = 0;
+    // 战队加成
+    TYPE_TEAM_TECH = 1;
+    // 年费加成
+    TYPE_ANNUAL_VIP = 2;
+    // 超能加成
+    TYPE_SUPER_NONO = 3;
+    // 魂印加成
+    TYPE_SOULMARK = 4;
+    // 神谕觉醒
+    TYPE_AWAKEN = 5;
+    // 特殊加成
+    TYPE_SPECIAL = 6;
+    // 其他
+    TYPE_OTHER = 99;
+  }
+  message ExtraValue {
+    // 固定加成数值
+    optional int32 value = 1;
+    // 百分比加成数值
+    optional int32 percent = 2;
+  }
+
+  message Value {
+    // 体力值加成
+    ExtraValue hp = 1;
+    // 攻击值加成
+    ExtraValue attack = 2;
+    // 防御值加成
+    ExtraValue defense = 3;
+    // 特攻值加成
+    ExtraValue special_attack = 4;
+    // 特防值加成
+    ExtraValue special_defense = 5;
+    // 速度值加成
+    ExtraValue speed = 6;
+  }
+  // 能力加成类型
+  Type type = 1;
+  // 能力加成详情
+  Value value = 2;
+}
+
+// 精灵刻印信息
+message MintmarkInfo {
+  // 技能刻印信息
+  message Skill {
+    // 技能刻印ID
+    int32 id = 1;
+  }
+
+  // 能力刻印信息
+  message Ability {
+    // 能力刻印ID
+    int32 id = 1;
+  }
+
+  // 全能刻印信息
+  message Universal {
+    // 刻印宝石信息
+    message GemItem {
+      // 刻印宝石ID
+      int32 gem_id = 1;
+      // 宝石绑定的技能ID
+      int32 bind_skill_id = 2;
+    }
+    // 刻印ID
+    int32 id = 1;
+    // 刻印等级
+    int32 level = 2;
+    // 自定义刻印能力值，当该刻印数值与当前等级对应的数据不一致时需要设置该字段
+    // （例如使用旧版刻印升级系统升级过的刻印具有随机数值）
+    optional PetAbilityValue ability = 3;
+    // 宝石信息
+    optional GemItem gem = 4;
+  }
+
+  // 全效刻印信息
+  message Quanxiao {
+    // 能力刻印ID
+    int32 id = 1;
+    // 技能刻印ID
+    int32 skill_mintmark_id = 2;
+  }
+  oneof mintmark {
+    Skill skill = 1;
+    Ability ability = 2;
+    Universal universal = 3;
+    Quanxiao quanxiao = 4;
+  }
+}
+
+message ResistanceInfo {
+  message Hurt {
+    int32 crit = 1;
+    int32 regular = 2;
+    int32 precent = 3;
+  }
+  message StateItem {
+    int32 state_id = 1;
+    int32 percent = 2;
+  }
+  Hurt hurt = 1;
+  repeated StateItem ctl = 2;
+  repeated StateItem weak = 3;
+}
+
+message PetInfo {
+  // 精灵特效通用模型
+  message Effect {
+    int32 id = 1;
+    int32 status = 2;
+    repeated int32 args = 3;
+  }
+
+  // 精灵ID
+  int32 id = 1;
+  // 精灵等级
+  int32 level = 2;
+  // 精灵个体值
+  int32 dv = 3;
+  // 精灵性格
+  int32 nature = 4;
+  // 精灵学习力
+  PetAbilityValue evs = 5;
+  // 精灵携带的技能
+  repeated int32 skills = 6;
+  // 精灵额外体力
+  int32 extra_hp = 7;
+  // 精灵特效列表，根据effectInfo.status字段区分不同类型（特性/异能特质/魂印）的特效。<br>
+  // （在游戏内，这些特效都存放在同一个effectInfo数组中，这里采用相同的设计以确保游戏数据包和工具的双重兼容性）
+  repeated Effect effects = 8;
+  // 精灵装备的刻印
+  repeated MintmarkInfo mintmarks = 9;
+  // 精灵的抗性信息
+  optional ResistanceInfo resistance = 10;
+  // 精灵是否神谕觉醒
+  bool is_awaken = 11;
+  // 精灵携带的战斗道具id列表
+  repeated int32 pet_items = 12;
+  // 精灵的额外能力值加成详情
+  repeated PetAbilityBonus ability_bonus = 13;
+  // 精灵的能力值总和
+  PetAbilityValue ability_total = 14;
+  // 精灵携带的皮肤ID
+  optional int32 skin_id = 19;
+}
+
+message PetCodeMessage {
+  // 服务器标记，用于指示接收方需要使用的数据源
+  enum Server {
+    SERVER_UNSPECIFIED = 0;
+    // 官方服
+    SERVER_OFFICIAL = 1;
+    // 测试服
+    SERVER_TEST = 2;
+    // 台服
+    SERVER_TAIWAN = 3;
+    // 经典服
+    SERVER_CLASSIC = 4;
+  }
+  // 信息展示模式，用于指示接收方应该如何展示精灵信息
+  enum DisplayMode {
+    DISPLAY_MODE_UNSPECIFIED = 0;
+    // PVP模式
+    DISPLAY_MODE_PVP = 1;
+    // PVE模式
+    DISPLAY_MODE_PVE = 2;
+    // BOSS模式
+    DISPLAY_MODE_BOSS = 3;
+  }
+  message SeerSet {
+    repeated int32 equips = 1;
+    int32 title_id = 2;
+  }
+  // 服务器标记，用于指示接收方需要使用的数据源
+  Server server = 1;
+  // 信息展示模式，用于指示接收方应该如何展示精灵信息
+  DisplayMode display_mode = 2;
+  // 套装和称号信息
+  SeerSet seer_set = 3;
+  // 精灵信息列表
+  repeated PetInfo pets = 4;
+}
