@@ -25,12 +25,13 @@
     "prepublishOnly": "npm run clean && npm run build",
     "clean": "npx rimraf ./dist",
     "build": "npm run clean && npx tsc -b -clean && npx tsc -b",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --import tsx --test"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
-    "typescript": "^5.9.3",
-    "rimraf": "^6.0.1"
+    "rimraf": "^6.0.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.10.2"
