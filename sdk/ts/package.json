@@ -1,13 +1,20 @@
 {
-  "name": "@petcode/sdk",
+  "name": "@seerbp/petcode-sdk",
   "version": "1.0.0",
   "description": "PetCode SDK for TypeScript",
   "license": "MIT",
   "author": "Nattsu39",
+  "keywords": [
+    "seer",
+    "petcode",
+    "sdk",
+    "typescript",
+    "protobuf"
+  ],
   "bugs": {
-    "url": "https://github.com/Nattsu39/petcode/issues"
+    "url": "https://github.com/Nattsu39/seer-pet-code/issues"
   },
-  "homepage": "https://github.com/Nattsu39/petcode/#readme",
+  "homepage": "https://github.com/Nattsu39/seer-pet-code/#readme",
   "type": "module",
   "main": "index.ts",
   "files": [
