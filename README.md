@@ -62,11 +62,12 @@ graph TD
 
 ## 🔌 接入条件
 
-详见 [使用手册 - 接入条件](./docs/manual.md#2-接入条件)
+详见 [使用手册 - 接入条件](./docs/manual.md#9-接入规范)
 
 ## 📖 使用文档
 
 - [使用手册](./docs/manual.md) - 包含安装、快速开始、API详解等完整指南
+- [SDK 开发指南](./docs/sdk-development.md) - 包含如何开发 SDK 的详细说明
 - [数据结构文档](./docs/data-structure.md)
 
 ## 贡献
