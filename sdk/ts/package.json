@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "PetCode SDK for TypeScript",
   "license": "MIT",
-  "author": "Nattsu39",
+  "author": "Nattsu39 <Natsu39@outlook.com> (https://github.com/Nattsu39)",
   "keywords": [
     "seer",
     "petcode",
@@ -16,7 +16,12 @@
   },
   "homepage": "https://github.com/Nattsu39/seer-pet-code/#readme",
   "type": "module",
-  "main": "index.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./dist/*.js": "./dist/*.js",
+    "./pb/*.js": "./generated/seerbp/petcode/*.js"
+  },
+  "main": "dist/index.js",
   "files": [
     "dist/**/*",
     "README*.md"
