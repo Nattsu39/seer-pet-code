@@ -1,0 +1,538 @@
+openapi: 3.1.0
+info:
+  title: PetCode API v1
+  description: |-
+    # PetCode API v1
+
+    该 API 用于在不支持安装 SDK 的环境中序列化和反序列化 PetCodeMessage。
+
+    项目链接：[seer-pet-code](https://github.com/nattsu39/seer-pet-code)
+  contact:
+    name: Nattsu39
+    url: https://github.com/nattsu39
+    email: Natsu39@outlook.com
+  license:
+    name: MIT License
+    url: https://github.com/nattsu39/seer-pet-code/blob/main/LICENSE
+  version: 1.0.0
+paths:
+  /v1/from_base64:
+    post:
+      tags:
+        - 解码
+        - seerbp.petcode.server.v1.PetCodeService
+      summary: 将 Base64 解码为 PetCodeMessage
+      operationId: decode_pet_code_message_from_base64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/seerbp.petcode.server.v1.DecodePetCodeMessageFromBase64Request'
+        required: true
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/seerbp.petcode.server.v1.DecodePetCodeMessageFromBase64Response'
+  /v1/to_base64:
+    post:
+      tags:
+        - 编码
+        - seerbp.petcode.server.v1.PetCodeService
+      summary: 将 PetCodeMessage 编码为 Base64
+      operationId: encode_pet_code_message_to_base64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/seerbp.petcode.server.v1.EncodePetCodeMessageToBase64Request'
+        required: true
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/seerbp.petcode.server.v1.EncodePetCodeMessageToBase64Response'
+components:
+  schemas:
+    seerbp.petcode.server.v1.DecodePetCodeMessageFromBase64Request:
+      type: object
+      properties:
+        base64:
+          type: string
+          title: base64
+      title: DecodePetCodeMessageFromBase64Request
+      additionalProperties: false
+    seerbp.petcode.server.v1.DecodePetCodeMessageFromBase64Response:
+      type: object
+      properties:
+        petCodeMessage:
+          title: pet_code_message
+          $ref: '#/components/schemas/seerbp.petcode.v1.PetCodeMessage'
+      title: DecodePetCodeMessageFromBase64Response
+      additionalProperties: false
+    seerbp.petcode.server.v1.EncodePetCodeMessageToBase64Request:
+      type: object
+      properties:
+        petCodeMessage:
+          title: pet_code_message
+          $ref: '#/components/schemas/seerbp.petcode.v1.PetCodeMessage'
+      title: EncodePetCodeMessageToBase64Request
+      additionalProperties: false
+    seerbp.petcode.server.v1.EncodePetCodeMessageToBase64Response:
+      type: object
+      properties:
+        base64:
+          type: string
+          title: base64
+      title: EncodePetCodeMessageToBase64Response
+      additionalProperties: false
+    seerbp.petcode.v1.MintmarkInfo:
+      type: object
+      oneOf:
+        - properties:
+            ability:
+              title: ability
+              $ref: '#/components/schemas/seerbp.petcode.v1.MintmarkInfo.Ability'
+          title: ability
+          required:
+            - ability
+        - properties:
+            quanxiao:
+              title: quanxiao
+              $ref: '#/components/schemas/seerbp.petcode.v1.MintmarkInfo.Quanxiao'
+          title: quanxiao
+          required:
+            - quanxiao
+        - properties:
+            skill:
+              title: skill
+              $ref: '#/components/schemas/seerbp.petcode.v1.MintmarkInfo.Skill'
+          title: skill
+          required:
+            - skill
+        - properties:
+            universal:
+              title: universal
+              $ref: '#/components/schemas/seerbp.petcode.v1.MintmarkInfo.Universal'
+          title: universal
+          required:
+            - universal
+      title: MintmarkInfo
+      additionalProperties: false
+      description: 精灵刻印信息
+    seerbp.petcode.v1.MintmarkInfo.Ability:
+      type: object
+      properties:
+        id:
+          type: integer
+          title: id
+          format: int32
+          description: 能力刻印ID
+      title: Ability
+      additionalProperties: false
+      description: 能力刻印信息
+    seerbp.petcode.v1.MintmarkInfo.Quanxiao:
+      type: object
+      properties:
+        id:
+          type: integer
+          title: id
+          format: int32
+          description: 能力刻印ID
+        skillMintmarkId:
+          type: integer
+          title: skill_mintmark_id
+          format: int32
+          description: 技能刻印ID
+      title: Quanxiao
+      additionalProperties: false
+      description: 全效刻印信息
+    seerbp.petcode.v1.MintmarkInfo.Skill:
+      type: object
+      properties:
+        id:
+          type: integer
+          title: id
+          format: int32
+          description: 技能刻印ID
+      title: Skill
+      additionalProperties: false
+      description: 技能刻印信息
+    seerbp.petcode.v1.MintmarkInfo.Universal:
+      type: object
+      properties:
+        id:
+          type: integer
+          title: id
+          format: int32
+          description: 刻印ID
+        level:
+          type: integer
+          title: level
+          format: int32
+          description: 刻印等级
+        ability:
+          title: ability
+          description: |-
+            自定义刻印能力值，当该刻印数值与当前等级对应的数据不一致时需要设置该字段
+             （例如使用旧版刻印升级系统升级过的刻印具有随机数值）
+          nullable: true
+          $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityValue'
+        gem:
+          title: gem
+          description: 宝石信息
+          nullable: true
+          $ref: '#/components/schemas/seerbp.petcode.v1.MintmarkInfo.Universal.GemItem'
+      title: Universal
+      additionalProperties: false
+      description: 全能刻印信息
+    seerbp.petcode.v1.MintmarkInfo.Universal.GemItem:
+      type: object
+      properties:
+        gemId:
+          type: integer
+          title: gem_id
+          format: int32
+          description: 刻印宝石ID
+        bindSkillId:
+          type: integer
+          title: bind_skill_id
+          format: int32
+          description: 宝石绑定的技能ID
+      title: GemItem
+      additionalProperties: false
+      description: 刻印宝石信息
+    seerbp.petcode.v1.PetAbilityBonus:
+      type: object
+      properties:
+        type:
+          title: type
+          description: 能力加成类型
+          $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityBonus.Type'
+        value:
+          title: value
+          description: 能力加成详情
+          $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityBonus.Value'
+      title: PetAbilityBonus
+      additionalProperties: false
+      description: 精灵额外加成项，例如战队加成，年费加成等
+    seerbp.petcode.v1.PetAbilityBonus.ExtraValue:
+      type: object
+      properties:
+        value:
+          type:
+            - integer
+            - "null"
+          title: value
+          format: int32
+          description: 固定加成数值
+          nullable: true
+        percent:
+          type:
+            - integer
+            - "null"
+          title: percent
+          format: int32
+          description: 百分比加成数值
+          nullable: true
+      title: ExtraValue
+      additionalProperties: false
+    seerbp.petcode.v1.PetAbilityBonus.Type:
+      type: string
+      title: Type
+      enum:
+        - TYPE_UNSPECIFIED
+        - TYPE_TEAM_TECH
+        - TYPE_ANNUAL_VIP
+        - TYPE_SUPER_NONO
+        - TYPE_SOULMARK
+        - TYPE_AWAKEN
+        - TYPE_SPECIAL
+        - TYPE_OTHER
+      description: 精灵额外能力值类型
+    seerbp.petcode.v1.PetAbilityBonus.Value:
+      type: object
+      properties:
+        hp:
+          title: hp
+          description: 体力值加成
+          $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityBonus.ExtraValue'
+        attack:
+          title: attack
+          description: 攻击值加成
+          $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityBonus.ExtraValue'
+        defense:
+          title: defense
+          description: 防御值加成
+          $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityBonus.ExtraValue'
+        specialAttack:
+          title: special_attack
+          description: 特攻值加成
+          $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityBonus.ExtraValue'
+        specialDefense:
+          title: special_defense
+          description: 特防值加成
+          $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityBonus.ExtraValue'
+        speed:
+          title: speed
+          description: 速度值加成
+          $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityBonus.ExtraValue'
+      title: Value
+      additionalProperties: false
+    seerbp.petcode.v1.PetAbilityValue:
+      type: object
+      properties:
+        hp:
+          type: integer
+          title: hp
+          format: int32
+          description: 体力值
+        attack:
+          type: integer
+          title: attack
+          format: int32
+          description: 攻击值
+        defense:
+          type: integer
+          title: defense
+          format: int32
+          description: 防御值
+        specialAttack:
+          type: integer
+          title: special_attack
+          format: int32
+          description: 特攻值
+        specialDefense:
+          type: integer
+          title: special_defense
+          format: int32
+          description: 特防值
+        speed:
+          type: integer
+          title: speed
+          format: int32
+          description: 速度值
+      title: PetAbilityValue
+      additionalProperties: false
+      description: 精灵六项数值对象
+    seerbp.petcode.v1.PetCodeMessage:
+      type: object
+      properties:
+        server:
+          title: server
+          description: 服务器标记，用于指示接收方需要使用的数据源
+          $ref: '#/components/schemas/seerbp.petcode.v1.PetCodeMessage.Server'
+        displayMode:
+          title: display_mode
+          description: 信息展示模式，用于指示接收方应该如何展示精灵信息
+          $ref: '#/components/schemas/seerbp.petcode.v1.PetCodeMessage.DisplayMode'
+        seerSet:
+          title: seer_set
+          description: 套装和称号信息
+          $ref: '#/components/schemas/seerbp.petcode.v1.PetCodeMessage.SeerSet'
+        pets:
+          type: array
+          items:
+            $ref: '#/components/schemas/seerbp.petcode.v1.PetInfo'
+          title: pets
+          description: 精灵信息列表
+      title: PetCodeMessage
+      additionalProperties: false
+    seerbp.petcode.v1.PetCodeMessage.DisplayMode:
+      type: string
+      title: DisplayMode
+      enum:
+        - DISPLAY_MODE_UNSPECIFIED
+        - DISPLAY_MODE_PVP
+        - DISPLAY_MODE_PVE
+        - DISPLAY_MODE_BOSS
+      description: 信息展示模式，用于指示接收方应该如何展示精灵信息
+    seerbp.petcode.v1.PetCodeMessage.SeerSet:
+      type: object
+      properties:
+        equips:
+          type: array
+          items:
+            type: integer
+            format: int32
+          title: equips
+        titleId:
+          type: integer
+          title: title_id
+          format: int32
+      title: SeerSet
+      additionalProperties: false
+    seerbp.petcode.v1.PetCodeMessage.Server:
+      type: string
+      title: Server
+      enum:
+        - SERVER_UNSPECIFIED
+        - SERVER_OFFICIAL
+        - SERVER_TEST
+        - SERVER_TAIWAN
+        - SERVER_CLASSIC
+      description: 服务器标记，用于指示接收方需要使用的数据源
+    seerbp.petcode.v1.PetInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          title: id
+          format: int32
+          description: 精灵ID
+        level:
+          type: integer
+          title: level
+          format: int32
+          description: 精灵等级
+        dv:
+          type: integer
+          title: dv
+          format: int32
+          description: 精灵个体值
+        nature:
+          type: integer
+          title: nature
+          format: int32
+          description: 精灵性格
+        evs:
+          title: evs
+          description: 精灵学习力
+          $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityValue'
+        skills:
+          type: array
+          items:
+            type: integer
+            format: int32
+          title: skills
+          description: 精灵携带的技能
+        extraHp:
+          type: integer
+          title: extra_hp
+          format: int32
+          description: 精灵额外体力
+        effects:
+          type: array
+          items:
+            $ref: '#/components/schemas/seerbp.petcode.v1.PetInfo.Effect'
+          title: effects
+          description: |-
+            精灵特效列表，根据effectInfo.status字段区分不同类型（特性/异能特质/魂印）的特效。<br>
+             （在游戏内，这些特效都存放在同一个effectInfo数组中，这里采用相同的设计以确保游戏数据包和工具的双重兼容性）
+        mintmarks:
+          type: array
+          items:
+            $ref: '#/components/schemas/seerbp.petcode.v1.MintmarkInfo'
+          title: mintmarks
+          description: 精灵装备的刻印
+        resistance:
+          title: resistance
+          description: 精灵的抗性信息
+          nullable: true
+          $ref: '#/components/schemas/seerbp.petcode.v1.ResistanceInfo'
+        isAwaken:
+          type: boolean
+          title: is_awaken
+          description: 精灵是否神谕觉醒
+        petItems:
+          type: array
+          items:
+            type: integer
+            format: int32
+          title: pet_items
+          description: 精灵携带的战斗道具id列表
+        abilityBonus:
+          type: array
+          items:
+            $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityBonus'
+          title: ability_bonus
+          description: 精灵的额外能力值加成详情
+        abilityTotal:
+          title: ability_total
+          description: 精灵的能力值总和
+          $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityValue'
+        skinId:
+          type:
+            - integer
+            - "null"
+          title: skin_id
+          format: int32
+          description: 精灵携带的皮肤ID
+          nullable: true
+      title: PetInfo
+      additionalProperties: false
+    seerbp.petcode.v1.PetInfo.Effect:
+      type: object
+      properties:
+        id:
+          type: integer
+          title: id
+          format: int32
+        status:
+          type: integer
+          title: status
+          format: int32
+        args:
+          type: array
+          items:
+            type: integer
+            format: int32
+          title: args
+      title: Effect
+      additionalProperties: false
+      description: 精灵特效通用模型
+    seerbp.petcode.v1.ResistanceInfo:
+      type: object
+      properties:
+        hurt:
+          title: hurt
+          $ref: '#/components/schemas/seerbp.petcode.v1.ResistanceInfo.Hurt'
+        ctl:
+          type: array
+          items:
+            $ref: '#/components/schemas/seerbp.petcode.v1.ResistanceInfo.StateItem'
+          title: ctl
+        weak:
+          type: array
+          items:
+            $ref: '#/components/schemas/seerbp.petcode.v1.ResistanceInfo.StateItem'
+          title: weak
+      title: ResistanceInfo
+      additionalProperties: false
+    seerbp.petcode.v1.ResistanceInfo.Hurt:
+      type: object
+      properties:
+        crit:
+          type: integer
+          title: crit
+          format: int32
+        regular:
+          type: integer
+          title: regular
+          format: int32
+        precent:
+          type: integer
+          title: precent
+          format: int32
+      title: Hurt
+      additionalProperties: false
+    seerbp.petcode.v1.ResistanceInfo.StateItem:
+      type: object
+      properties:
+        stateId:
+          type: integer
+          title: state_id
+          format: int32
+        percent:
+          type: integer
+          title: percent
+          format: int32
+      title: StateItem
+      additionalProperties: false
+security: []
+tags:
+  - name: seerbp.petcode.server.v1.PetCodeService

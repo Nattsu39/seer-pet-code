@@ -10,6 +10,6 @@ lint:
 breaking:
   use:
     - FILE
-# deps:
-#   - buf.build/protocolbuffers/wellknowntypes
-#   - buf.build/bufbuild/protovalidate
+deps:
+  - buf.build/googleapis/googleapis
+  - buf.build/gnostic/gnostic

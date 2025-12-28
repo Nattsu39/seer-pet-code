@@ -29,6 +29,14 @@
     - [PetCodeMessage.DisplayMode](#seerbp-petcode-v1-PetCodeMessage-DisplayMode)
     - [PetCodeMessage.Server](#seerbp-petcode-v1-PetCodeMessage-Server)
   
+- [seerbp/petcode/server/v1/service.proto](#seerbp_petcode_server_v1_service-proto)
+    - [DecodePetCodeMessageFromBase64Request](#seerbp-petcode-server-v1-DecodePetCodeMessageFromBase64Request)
+    - [DecodePetCodeMessageFromBase64Response](#seerbp-petcode-server-v1-DecodePetCodeMessageFromBase64Response)
+    - [EncodePetCodeMessageToBase64Request](#seerbp-petcode-server-v1-EncodePetCodeMessageToBase64Request)
+    - [EncodePetCodeMessageToBase64Response](#seerbp-petcode-server-v1-EncodePetCodeMessageToBase64Response)
+  
+    - [PetCodeService](#seerbp-petcode-server-v1-PetCodeService)
+  
 - [标量值类型](#scalar-value-types)
 
 
@@ -391,6 +399,93 @@
  <!-- end enums -->
 
  <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="seerbp_petcode_server_v1_service-proto"></a>
+<p align="right"><a href="#top">回到顶部</a></p>
+
+## seerbp/petcode/server/v1/service.proto
+
+
+
+<a name="seerbp-petcode-server-v1-DecodePetCodeMessageFromBase64Request"></a>
+
+### DecodePetCodeMessageFromBase64Request
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| base64 | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="seerbp-petcode-server-v1-DecodePetCodeMessageFromBase64Response"></a>
+
+### DecodePetCodeMessageFromBase64Response
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| pet_code_message | [seerbp.petcode.v1.PetCodeMessage](#seerbp-petcode-v1-PetCodeMessage) |  |  |
+
+
+
+
+
+
+<a name="seerbp-petcode-server-v1-EncodePetCodeMessageToBase64Request"></a>
+
+### EncodePetCodeMessageToBase64Request
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| pet_code_message | [seerbp.petcode.v1.PetCodeMessage](#seerbp-petcode-v1-PetCodeMessage) |  |  |
+
+
+
+
+
+
+<a name="seerbp-petcode-server-v1-EncodePetCodeMessageToBase64Response"></a>
+
+### EncodePetCodeMessageToBase64Response
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| base64 | [string](#string) |  |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="seerbp-petcode-server-v1-PetCodeService"></a>
+
+### PetCodeService
+
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| EncodePetCodeMessageToBase64 | [EncodePetCodeMessageToBase64Request](#seerbp-petcode-server-v1-EncodePetCodeMessageToBase64Request) | [EncodePetCodeMessageToBase64Response](#seerbp-petcode-server-v1-EncodePetCodeMessageToBase64Response) |  |
+| DecodePetCodeMessageFromBase64 | [DecodePetCodeMessageFromBase64Request](#seerbp-petcode-server-v1-DecodePetCodeMessageFromBase64Request) | [DecodePetCodeMessageFromBase64Response](#seerbp-petcode-server-v1-DecodePetCodeMessageFromBase64Response) |  |
 
  <!-- end services -->
 

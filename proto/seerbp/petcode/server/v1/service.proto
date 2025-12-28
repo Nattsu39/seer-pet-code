@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package seerbp.petcode.server.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+import "google/api/annotations.proto";
+import "seerbp/petcode/v1/message.proto";
+
+option (gnostic.openapi.v3.document) = {
+  info: {
+    title: "PetCode API v1"
+    description: "# PetCode API v1\n\n该 API 用于在不支持安装 SDK 的环境中序列化和反序列化 PetCodeMessage。\n\n项目链接：[seer-pet-code](https://github.com/nattsu39/seer-pet-code)"
+    version: "1.0.0"
+    contact: {
+      name: "Nattsu39"
+      url: "https://github.com/nattsu39"
+      email: "Natsu39@outlook.com"
+    }
+    license: {
+      name: "MIT License"
+      url: "https://github.com/nattsu39/seer-pet-code/blob/main/LICENSE"
+    }
+  }
+};
+
+service PetCodeService {
+  rpc EncodePetCodeMessageToBase64(EncodePetCodeMessageToBase64Request) returns (EncodePetCodeMessageToBase64Response) {
+    option (google.api.http) = {
+      post: "/v1/to_base64"
+      body: "*"
+    };
+    option (gnostic.openapi.v3.operation) = {
+      summary: "将 PetCodeMessage 编码为 Base64"
+      tags: "编码"
+      operation_id: "encode_pet_code_message_to_base64"
+    };
+  }
+  rpc DecodePetCodeMessageFromBase64(DecodePetCodeMessageFromBase64Request) returns (DecodePetCodeMessageFromBase64Response) {
+    option (google.api.http) = {
+      post: "/v1/from_base64"
+      body: "*"
+    };
+    option (gnostic.openapi.v3.operation) = {
+      summary: "将 Base64 解码为 PetCodeMessage"
+      tags: "解码"
+      operation_id: "decode_pet_code_message_from_base64"
+    };
+  }
+}
+
+message EncodePetCodeMessageToBase64Request {
+  petcode.v1.PetCodeMessage pet_code_message = 1;
+}
+
+message EncodePetCodeMessageToBase64Response {
+  string base64 = 1;
+}
+
+message DecodePetCodeMessageFromBase64Request {
+  string base64 = 1;
+}
+
+message DecodePetCodeMessageFromBase64Response {
+  petcode.v1.PetCodeMessage pet_code_message = 1;
+}
