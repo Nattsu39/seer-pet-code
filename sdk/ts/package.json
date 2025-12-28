@@ -19,7 +19,7 @@
   "exports": {
     ".": "./dist/index.js",
     "./dist/*.js": "./dist/*.js",
-    "./pb/*.js": "./generated/seerbp/petcode/*.js"
+    "./pb/*.js": "./dist/generated/seerbp/petcode/*.js"
   },
   "main": "dist/index.js",
   "files": [
