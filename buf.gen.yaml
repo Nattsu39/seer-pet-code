@@ -5,6 +5,7 @@ managed:
 plugins:
   - remote: buf.build/bufbuild/es
     out: sdk/ts/src/generated
+    include_imports: true
     opt:
       - target=ts
       - import_extension=js
@@ -26,7 +27,7 @@ plugins:
     out: ./
     strategy: all
     opt:
-    - features=connectrpc;google.api.http;gnostic
+    - features=connectrpc;gnostic
     - path=openapi.yaml
 
   - local: ["go", "run", "github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@v1.5.1"]
