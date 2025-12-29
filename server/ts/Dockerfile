@@ -31,9 +31,6 @@ RUN npm ci --omit=dev
 # 从构建阶段复制编译后的文件
 COPY --from=builder /app/dist ./dist
 
-# 复制源代码（tsx 需要）
-COPY --from=builder /app/src ./src
-
 # 复制 OpenAPI 文档
 COPY --from=builder /app/openapi.yaml ./openapi.yaml
 

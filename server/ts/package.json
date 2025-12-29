@@ -22,7 +22,7 @@
     "clean": "npx rimraf ./dist",
     "build": "npm run clean && npx tsc -b -clean && npx tsc -b",
     "test": "node --import tsx --test",
-    "start": "node --import tsx src/server.ts",
+    "start": "node dist/server.js",
     "dev": "node --import tsx src/server.ts --watch"
   },
   "dependencies": {
