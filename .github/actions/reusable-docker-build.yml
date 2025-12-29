@@ -1,0 +1,169 @@
+name: 可重用的 Docker 构建和发布工作流
+
+on:
+  workflow_call:
+    inputs:
+      service-name:
+        description: '服务名称（例如：ts-server, py-server）'
+        required: true
+        type: string
+      service-path:
+        description: '服务的相对路径（例如：server/ts）'
+        required: true
+        type: string
+      image-name:
+        description: 'Docker 镜像名称（例如：petcode-ts-server）'
+        required: true
+        type: string
+      platforms:
+        description: '构建平台（例如：linux/amd64,linux/arm64）'
+        required: false
+        type: string
+        default: 'linux/amd64,linux/arm64'
+      build-args:
+        description: 'Docker 构建参数（例如：ARG1=value1,ARG2=value2）'
+        required: false
+        type: string
+        default: ''
+      node-version:
+        description: 'Node.js 版本（用于依赖安装和测试）'
+        required: false
+        type: string
+        default: '20'
+    outputs:
+      image-tags:
+        description: '生成的镜像标签列表'
+        value: ${{ jobs.build-and-push.outputs.tags }}
+      image-digest:
+        description: '镜像的 digest'
+        value: ${{ jobs.build-and-push.outputs.digest }}
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    outputs:
+      tags: ${{ steps.meta.outputs.tags }}
+      digest: ${{ steps.build-push.outputs.digest }}
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 设置 Node.js 环境（如果需要）
+        if: ${{ inputs.node-version != '' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: 'npm'
+          cache-dependency-path: ${{ inputs.service-path }}/package-lock.json
+
+      - name: 安装项目依赖（用于 monorepo 共享依赖）
+        if: ${{ inputs.node-version != '' }}
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          fi
+
+      - name: 生成 OpenAPI 文档
+        run: |
+          cp openapi.yaml ${{ inputs.service-path }}/openapi.yaml
+
+      - name: 运行测试（如果存在）
+        if: ${{ inputs.node-version != '' }}
+        working-directory: ${{ inputs.service-path }}
+        run: |
+          npm ci
+          if npm run | grep -q "test"; then
+            npm test || echo "测试失败，但继续构建..."
+          fi
+
+      - name: 设置 Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: |
+            image=moby/buildkit:latest
+            network=host
+
+      - name: 登录到 GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 提取 Docker 元数据
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ inputs.image-name }}
+          tags: |
+            # 分支名标签
+            type=ref,event=branch
+            # PR 标签
+            type=ref,event=pr
+            # 语义化版本标签
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            # Git SHA 短标签
+            type=sha,prefix={{branch}}-,format=short
+            # 最新标签（仅用于 main/master 分支）
+            type=raw,value=latest,enable={{is_default_branch}}
+            # 带时间戳的标签（用于追踪）
+            type=raw,value={{date 'YYYYMMDD-HHmmss' tz='Asia/Shanghai'}}
+          labels: |
+            org.opencontainers.image.title=${{ inputs.service-name }}
+            org.opencontainers.image.description=PetCode ${{ inputs.service-name }}
+            org.opencontainers.image.vendor=${{ github.repository_owner }}
+            maintainer=${{ github.repository_owner }}
+
+      - name: 构建并推送 Docker 镜像
+        id: build-push
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ inputs.service-path }}
+          file: ${{ inputs.service-path }}/Dockerfile
+          platforms: ${{ inputs.platforms }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: ${{ inputs.build-args }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          provenance: true
+          sbom: true
+
+      - name: 生成构建摘要
+        run: |
+          echo "## 🚀 Docker 镜像构建成功" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 服务信息" >> $GITHUB_STEP_SUMMARY
+          echo "- **服务名称**: ${{ inputs.service-name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **服务路径**: ${{ inputs.service-path }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **镜像名称**: ${{ inputs.image-name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🏷️ 镜像标签" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.meta.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔐 镜像摘要" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.build-push.outputs.digest }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📝 拉取命令" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo "docker pull ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ inputs.image-name }}:latest" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+

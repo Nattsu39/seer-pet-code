@@ -1,0 +1,101 @@
+name: 发布 TypeScript Server 到 GHCR
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+    paths:
+      - 'server/ts/**'
+      - '.github/workflows/ts-server-publish.yml'
+      - '.github/actions/reusable-docker-build.yml'
+    tags:
+      - 'v*'
+      - 'ts-server-v*'
+  pull_request:
+    branches:
+      - main
+      - master
+      - develop
+    paths:
+      - 'server/ts/**'
+      - '.github/workflows/ts-server-publish.yml'
+  workflow_dispatch:
+    inputs:
+      platforms:
+        description: '构建平台（用逗号分隔）'
+        required: false
+        default: 'linux/amd64,linux/arm64'
+        type: string
+
+# 确保同一时间只有一个部署在运行
+concurrency:
+  group: ts-server-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publish-ts-server:
+    name: 构建并发布 TypeScript Server
+    uses: ./.github/actions/reusable-docker-build.yml
+    with:
+      service-name: 'TypeScript Server'
+      service-path: 'server/ts'
+      image-name: 'petcode-ts-server'
+      platforms: ${{ inputs.platforms || 'linux/amd64,linux/arm64' }}
+      node-version: '22'
+    secrets: inherit
+
+  # 可选：部署后的集成测试
+  integration-test:
+    name: 集成测试
+    runs-on: ubuntu-latest
+    needs: publish-ts-server
+    if: github.event_name != 'pull_request'
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 登录到 GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 拉取并测试镜像
+        run: |
+          echo "🔍 拉取刚构建的镜像..."
+          IMAGE_TAG=$(echo "${{ needs.publish-ts-server.outputs.image-tags }}" | head -n 1)
+          echo "使用镜像标签: $IMAGE_TAG"
+
+          docker pull $IMAGE_TAG
+
+          echo "🚀 启动容器..."
+          docker run -d --name petcode-test -p 8080:8080 $IMAGE_TAG
+
+          echo "⏳ 等待服务启动..."
+          sleep 10
+
+          echo "🧪 测试健康检查端点..."
+          if curl -f http://localhost:8080/health || curl -f http://localhost:8080/ ; then
+            echo "✅ 服务健康检查通过"
+          else
+            echo "❌ 服务健康检查失败"
+            docker logs petcode-test
+            exit 1
+          fi
+
+          echo "🧹 清理..."
+          docker stop petcode-test
+          docker rm petcode-test
+
+      - name: 输出部署信息
+        run: |
+          echo "## ✅ TypeScript Server 部署成功" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🎉 集成测试通过" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "镜像已成功发布到 GitHub Container Registry 并通过集成测试。" >> $GITHUB_STEP_SUMMARY
+

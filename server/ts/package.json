@@ -1,0 +1,45 @@
+{
+  "name": "@seerbp/petcode-server",
+  "version": "1.0.0",
+  "description": "",
+  "license": "MIT",
+  "author": "Nattsu39",
+  "keywords": [
+    "seer",
+    "petcode",
+    "server",
+    "typescript",
+    "protobuf"
+  ],
+  "type": "module",
+  "main": "index.ts",
+  "bugs": {
+    "url": "https://github.com/Nattsu39/seer-pet-code/issues"
+  },
+  "homepage": "https://github.com/Nattsu39/seer-pet-code/#readme",
+  "scripts": {
+    "prepublishOnly": "npm run clean && npm run build",
+    "clean": "npx rimraf ./dist",
+    "build": "npm run clean && npx tsc -b -clean && npx tsc -b",
+    "test": "node --import tsx --test",
+    "start": "node --import tsx src/server.ts",
+    "dev": "node --import tsx src/server.ts --watch"
+  },
+  "dependencies": {
+    "@bufbuild/buf": "^1.61.0",
+    "@bufbuild/protobuf": "^2.10.2",
+    "@bufbuild/protoc-gen-es": "^2.10.2",
+    "@connectrpc/connect": "^2.1.1",
+    "@connectrpc/connect-fastify": "^2.1.1",
+    "@connectrpc/connect-node": "^2.1.1",
+    "@scalar/fastify-api-reference": "^1.40.9",
+    "@seerbp/petcode-sdk": "^1.0.1",
+    "fastify": "^5.6.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "rimraf": "^6.0.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

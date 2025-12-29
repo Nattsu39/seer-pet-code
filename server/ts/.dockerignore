@@ -1,0 +1,71 @@
+# Git 相关
+.git
+.gitignore
+.gitattributes
+
+# CI/CD
+.github
+
+# 文档
+*.md
+docs/
+examples/
+
+# 开发工具配置
+.vscode/
+.idea/
+.cursor/
+*.swp
+*.swo
+*~
+
+# 依赖目录（会在容器内重新安装）
+**/node_modules/
+**/__pycache__/
+**/*.pyc
+**/.pytest_cache/
+**/venv/
+**/.venv/
+
+# 构建输出（会在容器内重新构建）
+**/dist/
+**/build/
+**/.next/
+**/.nuxt/
+
+# 测试相关
+**/*.test.ts
+**/*.test.js
+**/*.spec.ts
+**/*.spec.js
+**/test/
+**/tests/
+**/__tests__/
+**/coverage/
+**/.coverage
+
+# 日志文件
+**/*.log
+**/logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 环境变量文件（应该在运行时注入）
+.env
+.env.*
+!.env.example
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+
+# OS 文件
+.DS_Store
+Thumbs.db
+
+# 其他
+*.bak
+*.backup
+
