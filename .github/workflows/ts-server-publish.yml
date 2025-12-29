@@ -37,7 +37,7 @@ concurrency:
 jobs:
   publish-ts-server:
     name: 构建并发布 TypeScript Server
-    uses: ./.github/actions/reusable-docker-build.yml
+    uses: ./.github/actions/reusable-docker-build
     with:
       service-name: 'TypeScript Server'
       service-path: 'server/ts'
