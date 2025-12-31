@@ -461,10 +461,12 @@ components:
             type: integer
             format: int32
           title: equips
+          description: 装备部件ID列表
         titleId:
           type: integer
           title: title_id
           format: int32
+          description: 称号ID，对应游戏配置文件`achievements`中的`spe_name_bonus`字段
       title: SeerSet
       additionalProperties: false
     seerbp.petcode.v1.PetCodeMessage.Server:
@@ -515,7 +517,7 @@ components:
           type: integer
           title: extra_hp
           format: int32
-          description: 精灵额外体力
+          description: 精灵额外体力上限
         effects:
           type: array
           items:
@@ -573,16 +575,19 @@ components:
           type: integer
           title: id
           format: int32
+          description: 特效ID，对应游戏内配置的 eid/effect_id 字段（该字段不能为soulmark id或effect idx）
         status:
           type: integer
           title: status
           format: int32
+          description: 特效类型
         args:
           type: array
           items:
             type: integer
             format: int32
           title: args
+          description: 特效参数
       title: Effect
       additionalProperties: false
       description: 精灵特效通用模型
@@ -591,17 +596,20 @@ components:
       properties:
         hurt:
           title: hurt
+          description: 伤害抗性信息
           $ref: '#/components/schemas/seerbp.petcode.v1.ResistanceInfo.Hurt'
         ctl:
           type: array
           items:
             $ref: '#/components/schemas/seerbp.petcode.v1.ResistanceInfo.StateItem'
           title: ctl
+          description: 控制类状态抗性列表
         weak:
           type: array
           items:
             $ref: '#/components/schemas/seerbp.petcode.v1.ResistanceInfo.StateItem'
           title: weak
+          description: 弱化类状态抗性列表
       title: ResistanceInfo
       additionalProperties: false
     seerbp.petcode.v1.ResistanceInfo.Hurt:
@@ -611,16 +619,20 @@ components:
           type: integer
           title: crit
           format: int32
+          description: 暴击抗性的百分比加成值，例如点满抗性后，抗性值为35%，则该字段值为35
         regular:
           type: integer
           title: regular
           format: int32
+          description: 固定伤害的百分比加成值，例如点满抗性后，抗性值为35%，则该字段值为35
         precent:
           type: integer
           title: precent
           format: int32
+          description: 百分比伤害的百分比加成值，例如点满抗性后，抗性值为35%，则该字段值为35
       title: Hurt
       additionalProperties: false
+      description: 伤害抗性
     seerbp.petcode.v1.ResistanceInfo.StateItem:
       type: object
       properties:
@@ -628,12 +640,17 @@ components:
           type: integer
           title: state_id
           format: int32
+          description: 状态ID
         percent:
           type: integer
           title: percent
           format: int32
+          description: |-
+            状态抗性的百分比加成值（包含全免的5%），
+             例如点满抗性+拥有全免抗性后，抗性值为55%，则该字段值为55
       title: StateItem
       additionalProperties: false
+      description: 状态抗性
 security: []
 tags:
   - name: seerbp.petcode.server.v1.PetCodeService

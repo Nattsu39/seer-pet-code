@@ -115,25 +115,39 @@ message MintmarkInfo {
 }
 
 message ResistanceInfo {
+  // 伤害抗性
   message Hurt {
+    // 暴击抗性的百分比加成值，例如点满抗性后，抗性值为35%，则该字段值为35
     int32 crit = 1;
+    // 固定伤害的百分比加成值，例如点满抗性后，抗性值为35%，则该字段值为35
     int32 regular = 2;
+    // 百分比伤害的百分比加成值，例如点满抗性后，抗性值为35%，则该字段值为35
     int32 precent = 3;
   }
+  // 状态抗性
   message StateItem {
+    // 状态ID
     int32 state_id = 1;
+    // 状态抗性的百分比加成值（包含全免的5%），
+    // 例如点满抗性+拥有全免抗性后，抗性值为55%，则该字段值为55
     int32 percent = 2;
   }
+  // 伤害抗性信息
   Hurt hurt = 1;
+  // 控制类状态抗性列表
   repeated StateItem ctl = 2;
+  // 弱化类状态抗性列表
   repeated StateItem weak = 3;
 }
 
 message PetInfo {
   // 精灵特效通用模型
   message Effect {
+    // 特效ID，对应游戏内配置的 eid/effect_id 字段（该字段不能为soulmark id或effect idx）
     int32 id = 1;
+    // 特效类型
     int32 status = 2;
+    // 特效参数
     repeated int32 args = 3;
   }
 
@@ -149,7 +163,7 @@ message PetInfo {
   PetAbilityValue evs = 5;
   // 精灵携带的技能
   repeated int32 skills = 6;
-  // 精灵额外体力
+  // 精灵额外体力上限
   int32 extra_hp = 7;
   // 精灵特效列表，根据effectInfo.status字段区分不同类型（特性/异能特质/魂印）的特效。<br>
   // （在游戏内，这些特效都存放在同一个effectInfo数组中，这里采用相同的设计以确保游戏数据包和工具的双重兼容性）
@@ -194,7 +208,9 @@ message PetCodeMessage {
     DISPLAY_MODE_BOSS = 3;
   }
   message SeerSet {
+    // 装备部件ID列表
     repeated int32 equips = 1;
+    // 称号ID，对应游戏配置文件`achievements`中的`spe_name_bonus`字段
     int32 title_id = 2;
   }
   // 服务器标记，用于指示接收方需要使用的数据源

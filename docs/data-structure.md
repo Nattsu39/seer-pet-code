@@ -244,8 +244,8 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| equips | [int32](#int32) | repeated |  |
-| title_id | [int32](#int32) |  |  |
+| equips | [int32](#int32) | repeated | 装备部件ID列表 |
+| title_id | [int32](#int32) |  | 称号ID，对应游戏配置文件`achievements`中的`spe_name_bonus`字段 |
 
 
 
@@ -266,7 +266,7 @@
 | nature | [int32](#int32) |  | 精灵性格 |
 | evs | [PetAbilityValue](#seerbp-petcode-v1-PetAbilityValue) |  | 精灵学习力 |
 | skills | [int32](#int32) | repeated | 精灵携带的技能 |
-| extra_hp | [int32](#int32) |  | 精灵额外体力 |
+| extra_hp | [int32](#int32) |  | 精灵额外体力上限 |
 | effects | [PetInfo.Effect](#seerbp-petcode-v1-PetInfo-Effect) | repeated | 精灵特效列表，根据effectInfo.status字段区分不同类型（特性/异能特质/魂印）的特效。<br> （在游戏内，这些特效都存放在同一个effectInfo数组中，这里采用相同的设计以确保游戏数据包和工具的双重兼容性） |
 | mintmarks | [MintmarkInfo](#seerbp-petcode-v1-MintmarkInfo) | repeated | 精灵装备的刻印 |
 | resistance | [ResistanceInfo](#seerbp-petcode-v1-ResistanceInfo) | optional | 精灵的抗性信息 |
@@ -289,9 +289,9 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [int32](#int32) |  |  |
-| status | [int32](#int32) |  |  |
-| args | [int32](#int32) | repeated |  |
+| id | [int32](#int32) |  | 特效ID，对应游戏内配置的 eid/effect_id 字段（该字段不能为soulmark id或effect idx） |
+| status | [int32](#int32) |  | 特效类型 |
+| args | [int32](#int32) | repeated | 特效参数 |
 
 
 
@@ -306,9 +306,9 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| hurt | [ResistanceInfo.Hurt](#seerbp-petcode-v1-ResistanceInfo-Hurt) |  |  |
-| ctl | [ResistanceInfo.StateItem](#seerbp-petcode-v1-ResistanceInfo-StateItem) | repeated |  |
-| weak | [ResistanceInfo.StateItem](#seerbp-petcode-v1-ResistanceInfo-StateItem) | repeated |  |
+| hurt | [ResistanceInfo.Hurt](#seerbp-petcode-v1-ResistanceInfo-Hurt) |  | 伤害抗性信息 |
+| ctl | [ResistanceInfo.StateItem](#seerbp-petcode-v1-ResistanceInfo-StateItem) | repeated | 控制类状态抗性列表 |
+| weak | [ResistanceInfo.StateItem](#seerbp-petcode-v1-ResistanceInfo-StateItem) | repeated | 弱化类状态抗性列表 |
 
 
 
@@ -318,14 +318,14 @@
 <a name="seerbp-petcode-v1-ResistanceInfo-Hurt"></a>
 
 ### ResistanceInfo.Hurt
-
+伤害抗性
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| crit | [int32](#int32) |  |  |
-| regular | [int32](#int32) |  |  |
-| precent | [int32](#int32) |  |  |
+| crit | [int32](#int32) |  | 暴击抗性的百分比加成值，例如点满抗性后，抗性值为35%，则该字段值为35 |
+| regular | [int32](#int32) |  | 固定伤害的百分比加成值，例如点满抗性后，抗性值为35%，则该字段值为35 |
+| precent | [int32](#int32) |  | 百分比伤害的百分比加成值，例如点满抗性后，抗性值为35%，则该字段值为35 |
 
 
 
@@ -335,13 +335,13 @@
 <a name="seerbp-petcode-v1-ResistanceInfo-StateItem"></a>
 
 ### ResistanceInfo.StateItem
-
+状态抗性
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| state_id | [int32](#int32) |  |  |
-| percent | [int32](#int32) |  |  |
+| state_id | [int32](#int32) |  | 状态ID |
+| percent | [int32](#int32) |  | 状态抗性的百分比加成值（包含全免的5%）， 例如点满抗性+拥有全免抗性后，抗性值为55%，则该字段值为55 |
 
 
 
