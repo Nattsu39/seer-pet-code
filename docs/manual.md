@@ -158,12 +158,9 @@ print("SDK 安装成功！")
 
 ### 其他语言 SDK
 
-PetCode 还提供以下语言的 SDK：
+PetCode 还提供其他语言的 SDK，详情请查看 [sdk/](../sdk) 目录
 
-- **TypeScript/JavaScript**：请参考 `sdk/ts/README.md`
-- **其他语言**：SDK 功能大体相似，请参考各自的 README
-
-> **注意**：虽然本文档的示例使用 Python，但所有语言的官方 SDK 都提供相同的数据结构和功能。核心概念和使用方法在各语言间是通用的
+> **注意**：虽然本文档的示例使用 Python，但所有语言的 PetCode SDK 都提供相同的数据结构和功能。核心概念和使用方法在各语言间是通用的
 
 ---
 
@@ -181,7 +178,7 @@ PetCode 还提供以下语言的 SDK：
 | ------ | ------ | ------ | ------ |
 | `server` | `Server` 枚举 | 是 | 来源服务器（官服、测试服、台服等） |
 | `display_mode` | `DisplayMode` 枚举 | 是 | 展示模式（PVP、PVE、BOSS） |
-| `pets` | `PetInfo` 列表 | 是 | 精灵信息列表（1-6 只） |
+| `pets` | `PetInfo` 列表 | 是 | 精灵信息列表 |
 | `seer_set` | `SeerSet` | 否 | 赛尔套装和称号信息 |
 
 **枚举值**：
@@ -220,7 +217,7 @@ DISPLAY_MODE_BOSS = 3  # BOSS 模式
 
 | 字段 | 类型 | 必填 | 说明 |
 | ------ | ------ | ------ | ------ |
-| `skills` | `int` 列表 | 否 | 技能 ID 列表（最多 5 个，第五技能在最后） |
+| `skills` | `int` 列表 | 否 | 技能 ID 列表（最多 5 个） |
 
 > **技能石说明**：
 >
@@ -242,7 +239,7 @@ DISPLAY_MODE_BOSS = 3  # BOSS 模式
 > # 物攻技能石（类型=1，效果=5，基础ID=123）
 > skill_stone_id = 1 * 100000 + 5 * 1000 + 123  # = 105123
 >
-> # 特攻技能石（类型=2，效果=2，基础ID=456）
+> # 特攻技能石（类型=2，效果=2，基础ID=45）
 > skill_stone_id = 2 * 100000 + 2 * 1000 + 45  # = 202045
 > ```
 
@@ -265,7 +262,7 @@ DISPLAY_MODE_BOSS = 3  # BOSS 模式
 
 | 字段 | 类型 | 必填 | 说明 |
 | ------ | ------ | ------ | ------ |
-| `ability_total` | `PetAbilityValue` | 否 | 最终能力值总和（面板数值） |
+| `ability_total` | `PetAbilityValue` | 是 | 最终能力值总和（面板数值） |
 
 ### PetAbilityValue
 
@@ -376,7 +373,7 @@ my_pet.ability_bonus.extend([annual_vip_bonus, percent_bonus])
 | ------ | ------ | ------ | ------ |
 | `id` | `int` | 是 | 刻印 ID |
 | `level` | `int` | 是 | 刻印等级（1-5） |
-| `ability` | `PetAbilityValue` | 否 | 自定义能力值（旧版随机刻印） |
+| `ability` | `PetAbilityValue` | 否 | 自定义能力值（旧版随机强化刻印会用到此字段） |
 | `gem` | `GemItem` | 否 | 宝石信息 |
 
 **宝石信息（GemItem）**：
@@ -417,7 +414,7 @@ ResistanceInfo(
 **字段说明**：
 
 - `hurt`：伤害抗性（暴击、固伤、百分比）
-- `ctl`：控制类状态抗性列表（如冰冻、麻痹等）
+- `ctl`：控制类状态抗性列表（如害怕、麻痹等）
 - `weak`：弱化类状态抗性列表（如烧伤、中毒等）
 
 **使用辅助函数创建**（见第 8 章 API 参考）。
@@ -432,7 +429,7 @@ ResistanceInfo(
 
 | 字段 | 类型 | 说明 |
 | ------ | ------ | ------ |
-| `id` | `int` | 效果 ID（特性 idx、魂印 ID 等） |
+| `id` | `int` | 效果 ID，例如 new_se中的eid，魂印中的effect_id **（注意该值不能是特性 idx、魂印 ID 等，因为游戏内无法获取到这两个值）** |
 | `status` | `int` | 效果类型（区分特性、魂印等） |
 | `args` | `int` 列表 | 效果参数 |
 
@@ -1010,7 +1007,7 @@ pet.pet_items.append(300001)
 
 **[Python SDK API 参考文档](../sdk/py/README.md)**
 
-其他语言 SDK 的 API 参考请查看对应 SDK 目录下的 README 文档。所有的官方 PetCode SDK 均拥有这些函数，行为大体一致。
+其他语言 SDK 的 API 参考请查看对应 SDK 目录下的 README 文档。所有 PetCode SDK 均拥有这些函数，行为大体一致。
 
 ---
 
