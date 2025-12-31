@@ -39,6 +39,7 @@ jobs:
     name: 构建并发布 TypeScript Server
     uses: ./.github/workflows/reusable-docker-build.yml
     with:
+      branch: ${{ github.event.pull_request.head.ref || github.ref_name }}
       service-name: 'TypeScript Server'
       service-path: 'server/ts'
       image-name: 'petcode-ts-server'
