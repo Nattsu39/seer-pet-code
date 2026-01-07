@@ -5,7 +5,15 @@ import {
   type MessageShape, type DescMessage, toJson as schemaToJson, fromJson as schemaFromJson,
   type MessageJsonType,
 } from "@bufbuild/protobuf";
-import { gzipSync, unzipSync } from 'node:zlib';
+import { gzip, ungzip } from "pako";
+
+function compressWithGzip(binary: Uint8Array) {
+  return gzip(binary, { level: 1 });
+}
+
+function decompressWithGzip(binary: Uint8Array) {
+  return ungzip(binary);
+}
 
 /**
  * 将消息对象转换为二进制数据
@@ -14,7 +22,7 @@ import { gzipSync, unzipSync } from 'node:zlib';
  * @returns 二进制数据
  */
 export function toBinary<T extends DescMessage>(schema: T, message: MessageShape<T>): Uint8Array {
-  return gzipSync(schemaToBinary(schema, message), { level: 1 });
+  return compressWithGzip(schemaToBinary(schema, message));
 }
 
 /**
@@ -24,7 +32,7 @@ export function toBinary<T extends DescMessage>(schema: T, message: MessageShape
  * @returns 消息对象
  */
 export function fromBinary<T extends DescMessage>(schema: T, binary: Uint8Array): MessageShape<T> {
-  return schemaFromBinary(schema, unzipSync(binary));
+  return schemaFromBinary(schema, decompressWithGzip(binary));
 }
 
 /**

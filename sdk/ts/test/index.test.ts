@@ -36,7 +36,18 @@ describe("index (序列化和反序列化)", () => {
     seerSet: {},
   });
 
+  const testMessageBase64 = "H4sIAOIQWmkE/x3MoQ7CMBSFYW63lbua3RRB0xBYNkOmyAweiWnCM6AmeQU0dijwJBXMgRwPwLsggIEZHeL7c9RBINADET2teVnztqax5mMN5ckJ8D6ktZrEkHFsgVrIo3MJhxK2NexqOJawCHHfHbBxb4maY31hFPzXrVurTHBMKVWpZDSXPnISrn2S2kcg4cr+DUgUI2RSCYZCOtpJnMzJnQKRS9+9BBuJ15AaX1Ve/IVp5c0e7Ae/eGDrxQAAAA=="
+
   describe("toBinary 和 fromBinary", () => {
+    it("应该将 Base64 字符串还原为消息对象", () => {
+      const restored = fromBase64(PetCodeMessageSchema, testMessageBase64);
+      assert.equal(restored.server, testMessage.server);
+      assert.equal(restored.displayMode, testMessage.displayMode);
+      assert.equal(restored.pets.length, 1);
+      assert.equal(restored.pets[0]?.id, 3022);
+      assert.equal(restored.pets[0]?.level, 100);
+    });
+
     it("应该将消息转换为二进制并能够还原", () => {
       const binary = toBinary(PetCodeMessageSchema, testMessage);
       assert.ok(binary instanceof Uint8Array);
