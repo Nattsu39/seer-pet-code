@@ -96,6 +96,7 @@ export function createStateResist(
  * @param displayMode - 显示模式
  * @param pets - 精灵列表
  * @param seerSet - 套装和称号信息
+ * @param battleFires - 战斗火焰效果列表
  * @returns `PetCodeMessage` 对象
  */
 export function createPetCodeMessage(
@@ -103,7 +104,8 @@ export function createPetCodeMessage(
   displayMode: PetCodeMessage_DisplayMode,
   pets: OmitTypeName<PetInfo>[],
   seerSet: PetCodeMessage_SeerSetJson = {},
+  battleFires: number[] = [],
 ): PetCodeMessage {
   const petMessages = pets.map(pet => create(PetInfoSchema, pet as any));
-  return create(PetCodeMessageSchema, { server, displayMode, seerSet, pets: petMessages });
+  return create(PetCodeMessageSchema, { server, displayMode, seerSet, pets: petMessages, battleFires });
 }

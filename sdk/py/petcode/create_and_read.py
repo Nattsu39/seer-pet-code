@@ -98,10 +98,12 @@ def create_petcode_message(
     display_mode: PetCodeMessage.DisplayMode,
     seer_set: PetCodeMessage.SeerSet,
     pets: list[PetInfo],
+    battle_fires: list[PetCodeMessage.BattleFire] | None = None,
 ) -> PetCodeMessage:
     return PetCodeMessage(
         server=server,
         display_mode=display_mode,
         seer_set=seer_set,
         pets=pets,
+        battle_fires=battle_fires or [],
     )

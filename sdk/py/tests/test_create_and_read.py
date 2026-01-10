@@ -1,7 +1,5 @@
 """测试辅助创建和读取函数"""
 
-import pytest
-
 from petcode.create_and_read import (
     create_ability_mintmark,
     create_petcode_message,
@@ -11,6 +9,7 @@ from petcode.create_and_read import (
     create_universal_mintmark,
     read_mintmark,
 )
+import pytest
 from seerbp.petcode.v1.message_pb2 import (
     MintmarkInfo,
     PetAbilityValue,
@@ -107,7 +106,12 @@ class TestUniversalMintmark:
     def test_create_universal_mintmark_with_ability(self):
         """测试带自定义能力值的全能刻印"""
         ability = PetAbilityValue(
-            hp=100, attack=120, defense=80, special_attack=90, special_defense=85, speed=110
+            hp=100,
+            attack=120,
+            defense=80,
+            special_attack=90,
+            special_defense=85,
+            speed=110,
         )
         mintmark = create_universal_mintmark(id=40001, level=5, ability=ability)
 
@@ -120,7 +124,12 @@ class TestUniversalMintmark:
     def test_create_universal_mintmark_with_gem_and_ability(self):
         """测试同时带宝石和能力值的全能刻印"""
         ability = PetAbilityValue(
-            hp=100, attack=120, defense=80, special_attack=90, special_defense=85, speed=110
+            hp=100,
+            attack=120,
+            defense=80,
+            special_attack=90,
+            special_defense=85,
+            speed=110,
         )
         mintmark = create_universal_mintmark(
             id=40001, level=5, gem_id=1800011, bind_skill_id=24708, ability=ability
@@ -207,7 +216,7 @@ class TestReadMintmark:
     def test_read_empty_mintmark(self):
         """测试读取空刻印"""
         mintmark = MintmarkInfo()
-        with pytest.raises(ValueError, match="Unknown mintmark type"):
+        with pytest.raises(ValueError, match='Unknown mintmark type'):
             read_mintmark(mintmark)
 
 
@@ -316,7 +325,9 @@ class TestCreatePetCodeMessage:
             )
             assert message.display_mode == mode
 
-    def test_create_petcode_message_multiple_pets(self, sample_pet_info, sample_seer_set):
+    def test_create_petcode_message_multiple_pets(
+        self, sample_pet_info, sample_seer_set
+    ):
         """测试多只宠物"""
         from seerbp.petcode.v1.message_pb2 import PetAbilityValue, PetInfo
 
@@ -325,7 +336,12 @@ class TestCreatePetCodeMessage:
             level=100,
             dv=31,
             ability_total=PetAbilityValue(
-                hp=110, attack=130, defense=90, special_attack=100, special_defense=95, speed=120
+                hp=110,
+                attack=130,
+                defense=90,
+                special_attack=100,
+                special_defense=95,
+                speed=120,
             ),
         )
 
@@ -362,10 +378,20 @@ class TestCreatePetCodeMessage:
             level=100,
             dv=31,
             ability_total=PetAbilityValue(
-                hp=100, attack=120, defense=80, special_attack=90, special_defense=85, speed=110
+                hp=100,
+                attack=120,
+                defense=80,
+                special_attack=90,
+                special_defense=85,
+                speed=110,
             ),
             evs=PetAbilityValue(
-                hp=255, attack=255, defense=255, special_attack=255, special_defense=255, speed=255
+                hp=255,
+                attack=255,
+                defense=255,
+                special_attack=255,
+                special_defense=255,
+                speed=255,
             ),
             effects=[PetInfo.Effect(id=67, status=1, args=[1, 5])],
             skills=[24708, 31567, 31568, 31569],
@@ -373,7 +399,9 @@ class TestCreatePetCodeMessage:
             nature=1,
         )
 
-        seer_set = PetCodeMessage.SeerSet(equips=[200001, 300001, 400001, 500001, 600001])
+        seer_set = PetCodeMessage.SeerSet(
+            equips=[200001, 300001, 400001, 500001, 600001]
+        )
 
         message = create_petcode_message(
             server=PetCodeMessage.Server.SERVER_OFFICIAL,
@@ -386,3 +414,44 @@ class TestCreatePetCodeMessage:
         assert len(message.pets[0].skills) == 4
         assert len(message.pets[0].mintmarks) == 1
         assert message.pets[0].mintmarks[0].WhichOneof('mintmark') == 'universal'
+
+    def test_create_petcode_message_with_battle_fires(
+        self, sample_pet_info, sample_seer_set
+    ):
+        """测试带战斗火焰的消息创建"""
+        battle_fires = [
+            PetCodeMessage.BattleFire.BATTLE_FIRE_GREEN,
+            PetCodeMessage.BattleFire.BATTLE_FIRE_BLUE,
+        ]
+        message = create_petcode_message(
+            server=PetCodeMessage.Server.SERVER_OFFICIAL,
+            display_mode=PetCodeMessage.DisplayMode.DISPLAY_MODE_PVP,
+            seer_set=sample_seer_set,
+            pets=[sample_pet_info],
+            battle_fires=battle_fires,
+        )
+
+        assert len(message.battle_fires) == 2
+        assert message.battle_fires[0] == PetCodeMessage.BattleFire.BATTLE_FIRE_GREEN
+        assert message.battle_fires[1] == PetCodeMessage.BattleFire.BATTLE_FIRE_BLUE
+
+    def test_create_petcode_message_with_all_battle_fires(
+        self, sample_pet_info, sample_seer_set
+    ):
+        """测试所有类型的战斗火焰"""
+        battle_fires = [
+            PetCodeMessage.BattleFire.BATTLE_FIRE_GREEN,
+            PetCodeMessage.BattleFire.BATTLE_FIRE_BLUE,
+            PetCodeMessage.BattleFire.BATTLE_FIRE_PURPLE,
+            PetCodeMessage.BattleFire.BATTLE_FIRE_GOLD,
+        ]
+        message = create_petcode_message(
+            server=PetCodeMessage.Server.SERVER_OFFICIAL,
+            display_mode=PetCodeMessage.DisplayMode.DISPLAY_MODE_PVP,
+            seer_set=sample_seer_set,
+            pets=[sample_pet_info],
+            battle_fires=battle_fires,
+        )
+
+        assert len(message.battle_fires) == 4
+        assert PetCodeMessage.BattleFire.BATTLE_FIRE_GOLD in message.battle_fires
