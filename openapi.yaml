@@ -441,8 +441,24 @@ components:
             $ref: '#/components/schemas/seerbp.petcode.v1.PetInfo'
           title: pets
           description: 精灵信息列表
+        battleFires:
+          type: array
+          items:
+            $ref: '#/components/schemas/seerbp.petcode.v1.PetCodeMessage.BattleFire'
+          title: battle_fires
+          description: 战斗火焰效果列表，设置为数组类型以兼容多合一战斗火焰。
       title: PetCodeMessage
       additionalProperties: false
+    seerbp.petcode.v1.PetCodeMessage.BattleFire:
+      type: string
+      title: BattleFire
+      enum:
+        - BATTLE_FIRE_UNSPECIFIED
+        - BATTLE_FIRE_GREEN
+        - BATTLE_FIRE_BLUE
+        - BATTLE_FIRE_PURPLE
+        - BATTLE_FIRE_GOLD
+      description: 战斗火焰枚举
     seerbp.petcode.v1.PetCodeMessage.DisplayMode:
       type: string
       title: DisplayMode
