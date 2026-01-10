@@ -211,7 +211,7 @@ message PetCodeMessage {
     // 装备部件ID列表
     repeated int32 equips = 1;
     // 称号ID，对应游戏配置文件`achievements`中的`spe_name_bonus`字段
-    int32 title_id = 2;
+    optional int32 title_id = 2;
   }
   // 服务器标记，用于指示接收方需要使用的数据源
   Server server = 1;
