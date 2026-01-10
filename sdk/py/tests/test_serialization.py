@@ -2,9 +2,8 @@
 
 import base64
 
-import pytest
-
 import petcode
+import pytest
 from seerbp.petcode.v1.message_pb2 import PetCodeMessage
 
 
@@ -35,7 +34,10 @@ class TestBinarySerialization:
         # 验证完整性
         assert restored.pets[0].id == sample_petcode_message.pets[0].id
         assert restored.pets[0].level == sample_petcode_message.pets[0].level
-        assert restored.pets[0].ability_total.hp == sample_petcode_message.pets[0].ability_total.hp
+        assert (
+            restored.pets[0].ability_total.hp
+            == sample_petcode_message.pets[0].ability_total.hp
+        )
         assert restored.pets[0].skills == sample_petcode_message.pets[0].skills
 
     def test_binary_compression(self, sample_petcode_message):
@@ -50,7 +52,7 @@ class TestBinarySerialization:
     def test_from_binary_invalid_data(self):
         """测试使用无效数据进行反序列化"""
         with pytest.raises(Exception):  # gzip 或 protobuf 解析异常
-            petcode.from_binary(b"invalid_data")
+            petcode.from_binary(b'invalid_data')
 
     def test_binary_empty_message(self):
         """测试空消息的序列化"""
@@ -78,7 +80,7 @@ class TestBase64Serialization:
         try:
             base64.b64decode(b64_str)
         except Exception as e:
-            pytest.fail(f"Base64 字符串格式无效: {e}")
+            pytest.fail(f'Base64 字符串格式无效: {e}')
 
     def test_from_base64_basic(self, sample_petcode_message):
         """测试基本的 Base64 反序列化"""
@@ -98,12 +100,14 @@ class TestBase64Serialization:
         assert restored.pets[0].id == sample_petcode_message.pets[0].id
         assert restored.pets[0].level == sample_petcode_message.pets[0].level
         assert restored.pets[0].nature == sample_petcode_message.pets[0].nature
-        assert list(restored.pets[0].skills) == list(sample_petcode_message.pets[0].skills)
+        assert list(restored.pets[0].skills) == list(
+            sample_petcode_message.pets[0].skills
+        )
 
     def test_from_base64_invalid_string(self):
         """测试使用无效 Base64 字符串进行反序列化"""
         with pytest.raises(Exception):  # base64 解码或 gzip/protobuf 解析异常
-            petcode.from_base64("invalid!!!base64")
+            petcode.from_base64('invalid!!!base64')
 
     def test_base64_empty_message(self):
         """测试空消息的 Base64 序列化"""
@@ -236,8 +240,12 @@ class TestEdgeCases:
                     level=100,
                     dv=31,
                     ability_total=PetAbilityValue(
-                        hp=100, attack=120, defense=80,
-                        special_attack=90, special_defense=85, speed=110
+                        hp=100,
+                        attack=120,
+                        defense=80,
+                        special_attack=90,
+                        special_defense=85,
+                        speed=110,
                     ),
                 )
             )
@@ -283,8 +291,9 @@ class TestEdgeCases:
             id=0,
             level=1,
             dv=0,
-            ability_total=PetAbilityValue(hp=0, attack=0, defense=0,
-                                   special_attack=0, special_defense=0, speed=0),
+            ability_total=PetAbilityValue(
+                hp=0, attack=0, defense=0, special_attack=0, special_defense=0, speed=0
+            ),
         )
 
         msg = PetCodeMessage(
@@ -297,3 +306,27 @@ class TestEdgeCases:
         restored = petcode.from_binary(binary)
         assert restored.pets[0].dv == 0
         assert restored.pets[0].id == 0
+
+    def test_battle_fires_serialization(self):
+        """测试战斗火焰的序列化"""
+        msg = PetCodeMessage(
+            server=PetCodeMessage.Server.SERVER_OFFICIAL,
+            battle_fires=[
+                PetCodeMessage.BattleFire.BATTLE_FIRE_GREEN,
+                PetCodeMessage.BattleFire.BATTLE_FIRE_GOLD,
+            ],
+        )
+
+        # Base64 往返测试
+        b64 = petcode.to_base64(msg)
+        restored = petcode.from_base64(b64)
+        assert len(restored.battle_fires) == 2
+        assert PetCodeMessage.BattleFire.BATTLE_FIRE_GREEN in restored.battle_fires
+        assert PetCodeMessage.BattleFire.BATTLE_FIRE_GOLD in restored.battle_fires
+
+        # Dict 往返测试
+        data = petcode.to_dict(msg)
+        assert 'battleFires' in data
+        assert len(data['battleFires']) == 2
+        restored_dict = petcode.from_dict(data)
+        assert len(restored_dict.battle_fires) == 2

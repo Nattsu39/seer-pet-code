@@ -24,6 +24,54 @@ wheels = [
 ]
 
 [[package]]
+name = "gnostic-gnostic-protocolbuffers-pyi"
+version = "33.2.0.1.20230414000709+087bc8072ce4"
+source = { registry = "https://buf.build/gen/python" }
+dependencies = [
+    { name = "protobuf" },
+    { name = "types-protobuf" },
+]
+wheels = [
+    { url = "https://buf.build/gen/python/gnostic-gnostic-protocolbuffers-pyi/gnostic_gnostic_protocolbuffers_pyi-33.2.0.1.20230414000709+087bc8072ce4-py3-none-any.whl" },
+]
+
+[[package]]
+name = "gnostic-gnostic-protocolbuffers-python"
+version = "33.2.0.1.20230414000709+087bc8072ce4"
+source = { registry = "https://buf.build/gen/python" }
+dependencies = [
+    { name = "gnostic-gnostic-protocolbuffers-pyi" },
+    { name = "protobuf" },
+]
+wheels = [
+    { url = "https://buf.build/gen/python/gnostic-gnostic-protocolbuffers-python/gnostic_gnostic_protocolbuffers_python-33.2.0.1.20230414000709+087bc8072ce4-py3-none-any.whl" },
+]
+
+[[package]]
+name = "googleapis-googleapis-protocolbuffers-pyi"
+version = "33.2.0.1.20251126203132+004180b77378"
+source = { registry = "https://buf.build/gen/python" }
+dependencies = [
+    { name = "protobuf" },
+    { name = "types-protobuf" },
+]
+wheels = [
+    { url = "https://buf.build/gen/python/googleapis-googleapis-protocolbuffers-pyi/googleapis_googleapis_protocolbuffers_pyi-33.2.0.1.20251126203132+004180b77378-py3-none-any.whl" },
+]
+
+[[package]]
+name = "googleapis-googleapis-protocolbuffers-python"
+version = "33.2.0.1.20251126203132+004180b77378"
+source = { registry = "https://buf.build/gen/python" }
+dependencies = [
+    { name = "googleapis-googleapis-protocolbuffers-pyi" },
+    { name = "protobuf" },
+]
+wheels = [
+    { url = "https://buf.build/gen/python/googleapis-googleapis-protocolbuffers-python/googleapis_googleapis_protocolbuffers_python-33.2.0.1.20251126203132+004180b77378-py3-none-any.whl" },
+]
+
+[[package]]
 name = "iniconfig"
 version = "2.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -43,7 +91,7 @@ wheels = [
 
 [[package]]
 name = "petcode"
-version = "1.0.0"
+version = "1.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "seerbp-petcode-protocolbuffers-python" },
@@ -57,7 +105,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "seerbp-petcode-protocolbuffers-python", specifier = "==33.2.0.1.20251225073453+b0513d4afebb" }]
+requires-dist = [{ name = "seerbp-petcode-protocolbuffers-python", specifier = "==33.2.0.1.20260110152342+c9e05318fd42" }]
 
 [package.metadata.requires-dev]
 dev = [
@@ -145,26 +193,30 @@ wheels = [
 
 [[package]]
 name = "seerbp-petcode-protocolbuffers-pyi"
-version = "33.2.0.1.20251225073453+b0513d4afebb"
+version = "33.2.0.1.20260110152342+c9e05318fd42"
 source = { registry = "https://buf.build/gen/python" }
 dependencies = [
+    { name = "gnostic-gnostic-protocolbuffers-pyi" },
+    { name = "googleapis-googleapis-protocolbuffers-pyi" },
     { name = "protobuf" },
     { name = "types-protobuf" },
 ]
 wheels = [
-    { url = "https://buf.build/gen/python/seerbp-petcode-protocolbuffers-pyi/seerbp_petcode_protocolbuffers_pyi-33.2.0.1.20251225073453+b0513d4afebb-py3-none-any.whl" },
+    { url = "https://buf.build/gen/python/seerbp-petcode-protocolbuffers-pyi/seerbp_petcode_protocolbuffers_pyi-33.2.0.1.20260110152342+c9e05318fd42-py3-none-any.whl" },
 ]
 
 [[package]]
 name = "seerbp-petcode-protocolbuffers-python"
-version = "33.2.0.1.20251225073453+b0513d4afebb"
+version = "33.2.0.1.20260110152342+c9e05318fd42"
 source = { registry = "https://buf.build/gen/python" }
 dependencies = [
+    { name = "gnostic-gnostic-protocolbuffers-python" },
+    { name = "googleapis-googleapis-protocolbuffers-python" },
     { name = "protobuf" },
     { name = "seerbp-petcode-protocolbuffers-pyi" },
 ]
 wheels = [
-    { url = "https://buf.build/gen/python/seerbp-petcode-protocolbuffers-python/seerbp_petcode_protocolbuffers_python-33.2.0.1.20251225073453+b0513d4afebb-py3-none-any.whl" },
+    { url = "https://buf.build/gen/python/seerbp-petcode-protocolbuffers-python/seerbp_petcode_protocolbuffers_python-33.2.0.1.20260110152342+c9e05318fd42-py3-none-any.whl" },
 ]
 
 [[package]]

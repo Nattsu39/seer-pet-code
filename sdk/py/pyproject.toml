@@ -4,12 +4,12 @@ build-backend = "uv_build"
 
 [project]
 name = "petcode"
-version = "1.0.0"
+version = "1.1.0"
 description = "PetCode SDK for Python"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "seerbp-petcode-protocolbuffers-python==33.2.0.1.20251225073453+b0513d4afebb",
+    "seerbp-petcode-protocolbuffers-python==33.2.0.1.20260110152342+c9e05318fd42",
 ]
 
 [tool.uv.build-backend]

@@ -1,6 +1,6 @@
 {
   "name": "@seerbp/petcode-server",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "license": "MIT",
   "author": "Nattsu39",
@@ -33,7 +33,7 @@
     "@connectrpc/connect-fastify": "^2.1.1",
     "@connectrpc/connect-node": "^2.1.1",
     "@scalar/fastify-api-reference": "^1.40.9",
-    "@seerbp/petcode-sdk": "^1.0.1",
+    "@seerbp/petcode-sdk": "^1.1.0",
     "fastify": "^5.6.2"
   },
   "devDependencies": {

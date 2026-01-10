@@ -8,7 +8,7 @@ import {
   toObject,
   fromObject,
 } from "../src/index.js";
-import { PetInfoSchema, PetCodeMessageSchema, PetCodeMessage_Server, PetCodeMessage_DisplayMode, ResistanceInfoSchema } from "../src/generated/seerbp/petcode/v1/message_pb.js";
+import { PetInfoSchema, PetCodeMessageSchema, PetCodeMessage_Server, PetCodeMessage_DisplayMode, ResistanceInfoSchema, PetCodeMessage_BattleFire } from "../src/generated/seerbp/petcode/v1/message_pb.js";
 import { create } from "@bufbuild/protobuf";
 import { createAbilityMintmark, createStateResist } from "../src/create_and_read.js";
 
@@ -178,6 +178,25 @@ describe("index (序列化和反序列化)", () => {
       assert.equal(originalJson.server, finalJson.server);
       assert.equal(originalJson.displayMode, finalJson.displayMode);
       assert.equal(originalJson.pets?.length, finalJson.pets?.length);
+    });
+  });
+
+  describe("战斗火焰序列化", () => {
+    it("应该正确转换带战斗火焰的消息", () => {
+      const message = create(PetCodeMessageSchema, {
+        server: PetCodeMessage_Server.OFFICIAL,
+        battleFires: [PetCodeMessage_BattleFire.GREEN, PetCodeMessage_BattleFire.BLUE],
+      });
+
+      const base64 = toBase64(PetCodeMessageSchema, message);
+      const restored = fromBase64(PetCodeMessageSchema, base64);
+      assert.equal(restored.battleFires.length, 2);
+      assert.ok(restored.battleFires.includes(PetCodeMessage_BattleFire.GREEN));
+      assert.ok(restored.battleFires.includes(PetCodeMessage_BattleFire.BLUE));
+
+      const json = toObject(PetCodeMessageSchema, message);
+      assert.ok(Array.isArray(json.battleFires));
+      assert.equal(json.battleFires.length, 2);
     });
   });
 });

@@ -9,7 +9,7 @@ import {
   createStateResist,
   createPetCodeMessage,
 } from "../src/create_and_read.js";
-import { PetCodeMessage_DisplayMode, PetCodeMessage_Server, PetInfoSchema, ResistanceInfoSchema } from "../src/generated/seerbp/petcode/v1/message_pb.js";
+import { PetCodeMessage_BattleFire, PetCodeMessage_DisplayMode, PetCodeMessage_Server, PetInfoSchema, ResistanceInfoSchema } from "../src/generated/seerbp/petcode/v1/message_pb.js";
 import { create } from "@bufbuild/protobuf";
 
 describe("create_and_read", () => {
@@ -235,6 +235,25 @@ describe("create_and_read", () => {
       assert.equal(message.pets.length, 2);
       assert.equal(message.pets[0]?.id, 123);
       assert.equal(message.pets[1]?.id, 456);
+    });
+
+    it("应该处理战斗火焰", () => {
+      const testPet = create(PetInfoSchema, { id: 123 });
+      const battleFires = [
+        PetCodeMessage_BattleFire.GREEN,
+        PetCodeMessage_BattleFire.GOLD,
+      ];
+      const message = createPetCodeMessage(
+        PetCodeMessage_Server.OFFICIAL,
+        PetCodeMessage_DisplayMode.PVP,
+        [testPet],
+        {},
+        battleFires
+      );
+
+      assert.equal(message.battleFires.length, 2);
+      assert.equal(message.battleFires[0], PetCodeMessage_BattleFire.GREEN);
+      assert.equal(message.battleFires[1], PetCodeMessage_BattleFire.GOLD);
     });
   });
 });
