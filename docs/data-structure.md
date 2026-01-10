@@ -245,7 +245,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | equips | [int32](#int32) | repeated | 装备部件ID列表 |
-| title_id | [int32](#int32) |  | 称号ID，对应游戏配置文件`achievements`中的`spe_name_bonus`字段 |
+| title_id | [int32](#int32) | optional | 称号ID，对应游戏配置文件`achievements`中的`spe_name_bonus`字段 |
 
 
 
