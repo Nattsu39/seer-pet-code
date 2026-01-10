@@ -26,6 +26,7 @@
     - [ResistanceInfo.StateItem](#seerbp-petcode-v1-ResistanceInfo-StateItem)
   
     - [PetAbilityBonus.Type](#seerbp-petcode-v1-PetAbilityBonus-Type)
+    - [PetCodeMessage.BattleFire](#seerbp-petcode-v1-PetCodeMessage-BattleFire)
     - [PetCodeMessage.DisplayMode](#seerbp-petcode-v1-PetCodeMessage-DisplayMode)
     - [PetCodeMessage.Server](#seerbp-petcode-v1-PetCodeMessage-Server)
   
@@ -230,6 +231,7 @@
 | display_mode | [PetCodeMessage.DisplayMode](#seerbp-petcode-v1-PetCodeMessage-DisplayMode) |  | 信息展示模式，用于指示接收方应该如何展示精灵信息 |
 | seer_set | [PetCodeMessage.SeerSet](#seerbp-petcode-v1-PetCodeMessage-SeerSet) |  | 套装和称号信息 |
 | pets | [PetInfo](#seerbp-petcode-v1-PetInfo) | repeated | 精灵信息列表 |
+| battle_fires | [PetCodeMessage.BattleFire](#seerbp-petcode-v1-PetCodeMessage-BattleFire) | repeated | 战斗火焰效果列表，设置为数组类型以兼容多合一战斗火焰。 |
 
 
 
@@ -365,6 +367,21 @@
 | TYPE_AWAKEN | 5 | 神谕觉醒 |
 | TYPE_SPECIAL | 6 | 特殊加成 |
 | TYPE_OTHER | 99 | 其他 |
+
+
+
+<a name="seerbp-petcode-v1-PetCodeMessage-BattleFire"></a>
+
+### PetCodeMessage.BattleFire
+战斗火焰枚举
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| BATTLE_FIRE_UNSPECIFIED | 0 |  |
+| BATTLE_FIRE_GREEN | 1 | 绿火 |
+| BATTLE_FIRE_BLUE | 2 | 蓝火 |
+| BATTLE_FIRE_PURPLE | 3 | 紫火 |
+| BATTLE_FIRE_GOLD | 4 | 金火 |
 
 
 
