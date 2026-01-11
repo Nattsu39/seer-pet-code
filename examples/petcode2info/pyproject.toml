@@ -1,0 +1,13 @@
+[project]
+name = "petcode2info"
+version = "0.1.0"
+description = "PetCode Info Example"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "petcode>=1.1.0",
+    "seerapi>=103.2.0",
+]
+
+[[tool.uv.index]]
+url = "https://buf.build/gen/python"
