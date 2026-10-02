@@ -26,13 +26,16 @@ paths:
       parameters:
         - name: Connect-Protocol-Version
           in: header
-          required: true
+          description: Define the version of the Connect protocol
           schema:
             $ref: '#/components/schemas/connect-protocol-version'
+          example: 1
         - name: Connect-Timeout-Ms
           in: header
+          description: Define the timeout, in ms
           schema:
             $ref: '#/components/schemas/connect-timeout-header'
+          example: 1000
       requestBody:
         content:
           application/json:
@@ -62,13 +65,16 @@ paths:
       parameters:
         - name: Connect-Protocol-Version
           in: header
-          required: true
+          description: Define the version of the Connect protocol
           schema:
             $ref: '#/components/schemas/connect-protocol-version'
+          example: 1
         - name: Connect-Timeout-Ms
           in: header
+          description: Define the timeout, in ms
           schema:
             $ref: '#/components/schemas/connect-timeout-header'
+          example: 1000
       requestBody:
         content:
           application/json:
@@ -92,13 +98,15 @@ components:
   schemas:
     connect-protocol-version:
       type: number
-      title: Connect-Protocol-Version
-      enum:
+      examples:
         - 1
+      title: Connect-Protocol-Version
       description: Define the version of the Connect protocol
       const: 1
     connect-timeout-header:
       type: number
+      examples:
+        - 1000
       title: Connect-Timeout-Ms
       description: Define the timeout, in ms
     connect.error:
@@ -142,20 +150,15 @@ components:
       properties:
         type:
           type: string
-          description: 'A URL that acts as a globally unique identifier for the type of the serialized message. For example: `type.googleapis.com/google.rpc.ErrorInfo`. This is used to determine the schema of the data in the `value` field and is the discriminator for the `debug` field.'
+          description: 'A URL that acts as a globally unique identifier for the type of the serialized message. For example: `type.googleapis.com/google.rpc.ErrorInfo`.'
         value:
           type: string
-          format: binary
+          format: byte
           description: The Protobuf message, serialized as bytes and base64-encoded. The specific message type is identified by the `type` field.
         debug:
-          oneOf:
-            - type: object
-              title: Any
-              additionalProperties: true
-              description: Detailed error information.
-          discriminator:
-            propertyName: type
+          type: object
           title: Debug
+          additionalProperties: true
           description: Deserialized error detail payload. The 'type' field indicates the schema. This field is for easier debugging and should not be relied upon for application logic.
       additionalProperties: true
       description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message, with an additional debug field for ConnectRPC error details.
@@ -171,16 +174,18 @@ components:
       type: object
       properties:
         petCodeMessage:
+          allOf:
+            - $ref: '#/components/schemas/seerbp.petcode.v1.PetCodeMessage'
           title: pet_code_message
-          $ref: '#/components/schemas/seerbp.petcode.v1.PetCodeMessage'
       title: DecodePetCodeMessageFromBase64Response
       additionalProperties: false
     seerbp.petcode.server.v1.EncodePetCodeMessageToBase64Request:
       type: object
       properties:
         petCodeMessage:
+          allOf:
+            - $ref: '#/components/schemas/seerbp.petcode.v1.PetCodeMessage'
           title: pet_code_message
-          $ref: '#/components/schemas/seerbp.petcode.v1.PetCodeMessage'
       title: EncodePetCodeMessageToBase64Request
       additionalProperties: false
     seerbp.petcode.server.v1.EncodePetCodeMessageToBase64Response:
@@ -193,37 +198,58 @@ components:
       additionalProperties: false
     seerbp.petcode.v1.MintmarkInfo:
       type: object
-      oneOf:
-        - properties:
+      anyOf:
+        - type: object
+          properties:
             ability:
+              allOf:
+                - $ref: '#/components/schemas/seerbp.petcode.v1.MintmarkInfo.Ability'
               title: ability
-              $ref: '#/components/schemas/seerbp.petcode.v1.MintmarkInfo.Ability'
           title: ability
-          required:
-            - ability
-        - properties:
+        - type: object
+          properties:
             quanxiao:
+              allOf:
+                - $ref: '#/components/schemas/seerbp.petcode.v1.MintmarkInfo.Quanxiao'
               title: quanxiao
-              $ref: '#/components/schemas/seerbp.petcode.v1.MintmarkInfo.Quanxiao'
           title: quanxiao
-          required:
-            - quanxiao
-        - properties:
+        - type: object
+          properties:
             skill:
+              allOf:
+                - $ref: '#/components/schemas/seerbp.petcode.v1.MintmarkInfo.Skill'
               title: skill
-              $ref: '#/components/schemas/seerbp.petcode.v1.MintmarkInfo.Skill'
           title: skill
-          required:
-            - skill
-        - properties:
+        - type: object
+          properties:
             universal:
+              allOf:
+                - $ref: '#/components/schemas/seerbp.petcode.v1.MintmarkInfo.Universal'
               title: universal
-              $ref: '#/components/schemas/seerbp.petcode.v1.MintmarkInfo.Universal'
           title: universal
-          required:
-            - universal
+      unevaluatedProperties: false
+      not:
+        allOf:
+          - anyOf:
+              - required:
+                  - ability
+              - required:
+                  - quanxiao
+              - required:
+                  - skill
+              - required:
+                  - universal
+          - not:
+              oneOf:
+                - required:
+                    - ability
+                - required:
+                    - quanxiao
+                - required:
+                    - skill
+                - required:
+                    - universal
       title: MintmarkInfo
-      additionalProperties: false
       description: 精灵刻印信息
     seerbp.petcode.v1.MintmarkInfo.Ability:
       type: object
@@ -277,17 +303,17 @@ components:
           format: int32
           description: 刻印等级
         ability:
+          oneOf:
+            - $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityValue'
+            - type: "null"
           title: ability
-          description: |-
-            自定义刻印能力值，当该刻印数值与当前等级对应的数据不一致时需要设置该字段
-             （例如使用旧版刻印升级系统升级过的刻印具有随机数值）
-          nullable: true
-          $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityValue'
+          description: 自定义刻印能力值，当该刻印没有升满时需要设置该字段
         gem:
+          oneOf:
+            - $ref: '#/components/schemas/seerbp.petcode.v1.MintmarkInfo.Universal.GemItem'
+            - type: "null"
           title: gem
           description: 宝石信息
-          nullable: true
-          $ref: '#/components/schemas/seerbp.petcode.v1.MintmarkInfo.Universal.GemItem'
       title: Universal
       additionalProperties: false
       description: 全能刻印信息
@@ -311,13 +337,15 @@ components:
       type: object
       properties:
         type:
+          allOf:
+            - $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityBonus.Type'
           title: type
           description: 能力加成类型
-          $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityBonus.Type'
         value:
+          allOf:
+            - $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityBonus.Value'
           title: value
-          description: 能力加成详情
-          $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityBonus.Value'
+          description: 能力加成值
       title: PetAbilityBonus
       additionalProperties: false
       description: 精灵额外加成项，例如战队加成，年费加成等
@@ -331,7 +359,6 @@ components:
           title: value
           format: int32
           description: 固定加成数值
-          nullable: true
         percent:
           type:
             - integer
@@ -339,7 +366,6 @@ components:
           title: percent
           format: int32
           description: 百分比加成数值
-          nullable: true
       title: ExtraValue
       additionalProperties: false
     seerbp.petcode.v1.PetAbilityBonus.Type:
@@ -353,35 +379,42 @@ components:
         - TYPE_SOULMARK
         - TYPE_AWAKEN
         - TYPE_SPECIAL
+        - TYPE_BASEVALUE
         - TYPE_OTHER
       description: 精灵额外能力值类型
     seerbp.petcode.v1.PetAbilityBonus.Value:
       type: object
       properties:
         hp:
+          allOf:
+            - $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityBonus.ExtraValue'
           title: hp
           description: 体力值加成
-          $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityBonus.ExtraValue'
         attack:
+          allOf:
+            - $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityBonus.ExtraValue'
           title: attack
           description: 攻击值加成
-          $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityBonus.ExtraValue'
         defense:
+          allOf:
+            - $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityBonus.ExtraValue'
           title: defense
           description: 防御值加成
-          $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityBonus.ExtraValue'
         specialAttack:
+          allOf:
+            - $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityBonus.ExtraValue'
           title: special_attack
           description: 特攻值加成
-          $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityBonus.ExtraValue'
         specialDefense:
+          allOf:
+            - $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityBonus.ExtraValue'
           title: special_defense
           description: 特防值加成
-          $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityBonus.ExtraValue'
         speed:
+          allOf:
+            - $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityBonus.ExtraValue'
           title: speed
           description: 速度值加成
-          $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityBonus.ExtraValue'
       title: Value
       additionalProperties: false
     seerbp.petcode.v1.PetAbilityValue:
@@ -424,17 +457,20 @@ components:
       type: object
       properties:
         server:
+          allOf:
+            - $ref: '#/components/schemas/seerbp.petcode.v1.PetCodeMessage.Server'
           title: server
           description: 服务器标记，用于指示接收方需要使用的数据源
-          $ref: '#/components/schemas/seerbp.petcode.v1.PetCodeMessage.Server'
         displayMode:
+          allOf:
+            - $ref: '#/components/schemas/seerbp.petcode.v1.PetCodeMessage.DisplayMode'
           title: display_mode
           description: 信息展示模式，用于指示接收方应该如何展示精灵信息
-          $ref: '#/components/schemas/seerbp.petcode.v1.PetCodeMessage.DisplayMode'
         seerSet:
+          allOf:
+            - $ref: '#/components/schemas/seerbp.petcode.v1.PetCodeMessage.SeerSet'
           title: seer_set
           description: 套装和称号信息
-          $ref: '#/components/schemas/seerbp.petcode.v1.PetCodeMessage.SeerSet'
         pets:
           type: array
           items:
@@ -485,7 +521,6 @@ components:
           title: title_id
           format: int32
           description: 称号ID，对应游戏配置文件`achievements`中的`spe_name_bonus`字段
-          nullable: true
       title: SeerSet
       additionalProperties: false
     seerbp.petcode.v1.PetCodeMessage.Server:
@@ -520,11 +555,12 @@ components:
           type: integer
           title: nature
           format: int32
-          description: 精灵性格
+          description: 精灵性格，值为性格ID
         evs:
+          allOf:
+            - $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityValue'
           title: evs
           description: 精灵学习力
-          $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityValue'
         skills:
           type: array
           items:
@@ -536,7 +572,10 @@ components:
           type: integer
           title: extra_hp
           format: int32
-          description: 精灵额外体力上限
+          description: |-
+            精灵额外体力上限，该字段已经废弃，请使用 PetAbilityBonus 中的 TYPE_BASEVALUE 类型来获取/设置精灵的额外体力上限。
+             调用方应检查该字段是否存在，如果存在则必须将其合并到 PetAbilityBonus 中的 TYPE_BASEVALUE 类型加成中。
+          deprecated: true
         effects:
           type: array
           items:
@@ -552,10 +591,11 @@ components:
           title: mintmarks
           description: 精灵装备的刻印
         resistance:
+          oneOf:
+            - $ref: '#/components/schemas/seerbp.petcode.v1.ResistanceInfo'
+            - type: "null"
           title: resistance
           description: 精灵的抗性信息
-          nullable: true
-          $ref: '#/components/schemas/seerbp.petcode.v1.ResistanceInfo'
         isAwaken:
           type: boolean
           title: is_awaken
@@ -574,9 +614,10 @@ components:
           title: ability_bonus
           description: 精灵的额外能力值加成详情
         abilityTotal:
+          allOf:
+            - $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityValue'
           title: ability_total
           description: 精灵的能力值总和
-          $ref: '#/components/schemas/seerbp.petcode.v1.PetAbilityValue'
         skinId:
           type:
             - integer
@@ -584,7 +625,6 @@ components:
           title: skin_id
           format: int32
           description: 精灵携带的皮肤ID
-          nullable: true
       title: PetInfo
       additionalProperties: false
     seerbp.petcode.v1.PetInfo.Effect:
@@ -614,9 +654,10 @@ components:
       type: object
       properties:
         hurt:
+          allOf:
+            - $ref: '#/components/schemas/seerbp.petcode.v1.ResistanceInfo.Hurt'
           title: hurt
           description: 伤害抗性信息
-          $ref: '#/components/schemas/seerbp.petcode.v1.ResistanceInfo.Hurt'
         ctl:
           type: array
           items:

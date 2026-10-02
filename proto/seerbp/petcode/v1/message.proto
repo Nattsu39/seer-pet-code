@@ -33,8 +33,10 @@ message PetAbilityBonus {
     TYPE_SOULMARK = 4;
     // 神谕觉醒
     TYPE_AWAKEN = 5;
-    // 特殊加成
+    // 特殊加成，对应加成详情面板中的“特殊加成”一栏
     TYPE_SPECIAL = 6;
+    // 基础值加成，不显示在加成详情面板中的加成均属此类，例如雷伊/谱尼/灵神等特训，繁殖精灵二代加成等，也包括20点体力上限
+    TYPE_BASEVALUE = 7;
     // 其他
     TYPE_OTHER = 99;
   }
@@ -61,7 +63,7 @@ message PetAbilityBonus {
   }
   // 能力加成类型
   Type type = 1;
-  // 能力加成详情
+  // 能力加成值
   Value value = 2;
 }
 
@@ -92,8 +94,7 @@ message MintmarkInfo {
     int32 id = 1;
     // 刻印等级
     int32 level = 2;
-    // 自定义刻印能力值，当该刻印数值与当前等级对应的数据不一致时需要设置该字段
-    // （例如使用旧版刻印升级系统升级过的刻印具有随机数值）
+    // 自定义刻印能力值，当该刻印没有升满时需要设置该字段
     optional PetAbilityValue ability = 3;
     // 宝石信息
     optional GemItem gem = 4;
@@ -157,14 +158,15 @@ message PetInfo {
   int32 level = 2;
   // 精灵个体值
   int32 dv = 3;
-  // 精灵性格
+  // 精灵性格，值为性格ID
   int32 nature = 4;
   // 精灵学习力
   PetAbilityValue evs = 5;
   // 精灵携带的技能
   repeated int32 skills = 6;
-  // 精灵额外体力上限
-  int32 extra_hp = 7;
+  // 精灵额外体力上限，该字段已经废弃，请使用 PetAbilityBonus 中的 TYPE_BASEVALUE 类型来获取/设置精灵的额外体力上限。
+  // 调用方应检查该字段的值，如果非 0 则必须将其转换为 PetAbilityBonus 中一个全新的 TYPE_BASEVALUE 类型加成项。（而不是与其他已有的加成项合并）
+  int32 extra_hp = 7 [deprecated = true];
   // 精灵特效列表，根据effectInfo.status字段区分不同类型（特性/异能特质/魂印）的特效。<br>
   // （在游戏内，这些特效都存放在同一个effectInfo数组中，这里采用相同的设计以确保游戏数据包和工具的双重兼容性）
   repeated Effect effects = 8;
@@ -194,7 +196,7 @@ message PetCodeMessage {
     SERVER_TEST = 2;
     // 台服
     SERVER_TAIWAN = 3;
-    // 经典服
+    // 怀旧服
     SERVER_CLASSIC = 4;
   }
   // 信息展示模式，用于指示接收方应该如何展示精灵信息

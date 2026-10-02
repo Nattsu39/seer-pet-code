@@ -209,7 +209,7 @@ DISPLAY_MODE_BOSS = 3  # BOSS 模式
 | `dv` | `int` | 是 | 个体值 |
 | `nature` | `int` | 否 | 性格 ID |
 | `evs` | `PetAbilityValue` | 否 | 学习力（总和 ≤ 510） |
-| `extra_hp` | `int` | 否 | 体力上限附加值 |
+| `extra_hp` | `int` | 否 | **已废弃**，请改用 `ability_bonus` 中 `TYPE_BASEVALUE` 类型的体力加成 |
 | `is_awaken` | `bool` | 否 | 是否神谕觉醒 |
 | `skin_id` | `int` | 否 | 皮肤 ID |
 
@@ -965,6 +965,22 @@ message.pets[0].level = 99
 # 3. 重新序列化（未知字段会被自动保留）
 new_code = to_base64(message)
 ```
+
+#### 处理弃用字段
+
+当字段被标记为废弃时，调用方应将旧字段合并到新字段中。SDK 提供了 `convert_deprecated_data()` 函数自动完成该转换：
+
+```python
+from petcode import convert_deprecated_data, from_base64
+
+message = from_base64(code)       # 可能包含旧的 extra_hp 字段
+convert_deprecated_data(message)  # 原地转换
+
+# 转换后 extra_hp 为 0，数值已合并到 ability_bonus 的 TYPE_BASEVALUE 加成中
+print(message.pets[0].extra_hp)
+```
+
+> **说明**：无法使用 SDK 的环境可以调用 HTTP 服务的 `ConvertPetCodeMessageDeprecatedData` 接口完成相同转换。
 
 ### 常见陷阱
 
