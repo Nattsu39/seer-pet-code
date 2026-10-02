@@ -8,6 +8,32 @@ PetCode API v1 服务器实现，基于 TypeScript、Fastify 和 Connect RPC。
 
 项目链接：[seer-pet-code](https://github.com/nattsu39/seer-pet-code)
 
+## API 接口
+
+所有接口均为 Connect RPC（HTTP POST，JSON 请求体）。完整的接口文档可通过部署后的 `/reference` 页面查看。
+
+| 方法 | 路径 | 说明 |
+| ------ | ------ | ------ |
+| `EncodePetCodeMessageToBase64` | `/seerbp.petcode.server.v1.PetCodeService/EncodePetCodeMessageToBase64` | 将 `PetCodeMessage` 编码为 Base64 |
+| `DecodePetCodeMessageFromBase64` | `/seerbp.petcode.server.v1.PetCodeService/DecodePetCodeMessageFromBase64` | 将 Base64 解码为 `PetCodeMessage` |
+| `ConvertPetCodeMessageDeprecatedData` | `/seerbp.petcode.server.v1.PetCodeService/ConvertPetCodeMessageDeprecatedData` | 将 `PetCodeMessage` 中的弃用数据（如 `PetInfo.extra_hp`）转换为新数据 |
+
+### 弃用数据转换
+
+`ConvertPetCodeMessageDeprecatedData` 会将消息中已废弃的字段转换为当前推荐的数据表示，目前包括：
+
+- `PetInfo.extra_hp`：转换为 `ability_bonus` 中一个全新的 `TYPE_BASEVALUE` 类型的 `hp` 固定加成项，不会与已有加成项合并。
+
+请求与响应体结构：
+
+```json
+// 请求
+{ "petCodeMessage": { /* PetCodeMessage */ } }
+
+// 响应
+{ "petCodeMessage": { /* 转换后的 PetCodeMessage */ } }
+```
+
 ## 部署指南
 
 ### 方式一：使用 Docker 命令

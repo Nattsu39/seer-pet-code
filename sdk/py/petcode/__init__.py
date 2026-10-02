@@ -2,10 +2,10 @@ import base64
 import gzip
 
 from google.protobuf import json_format
-
 from seerbp.petcode.v1.message_pb2 import PetCodeMessage
 
 from .create_and_read import create_petcode_message
+from .deprecated import convert_deprecated_data
 
 
 def _compress_with_gzip(binary: bytes, level: int = 1) -> bytes:
@@ -63,6 +63,7 @@ def from_dict(data: dict) -> PetCodeMessage:
 
 
 __all__ = [
+    'convert_deprecated_data',
     'create_petcode_message',
     'from_base64',
     'from_binary',

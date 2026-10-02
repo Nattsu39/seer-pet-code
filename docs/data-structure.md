@@ -31,6 +31,8 @@
     - [PetCodeMessage.Server](#seerbp-petcode-v1-PetCodeMessage-Server)
   
 - [seerbp/petcode/server/v1/service.proto](#seerbp_petcode_server_v1_service-proto)
+    - [ConvertPetCodeMessageDeprecatedDataRequest](#seerbp-petcode-server-v1-ConvertPetCodeMessageDeprecatedDataRequest)
+    - [ConvertPetCodeMessageDeprecatedDataResponse](#seerbp-petcode-server-v1-ConvertPetCodeMessageDeprecatedDataResponse)
     - [DecodePetCodeMessageFromBase64Request](#seerbp-petcode-server-v1-DecodePetCodeMessageFromBase64Request)
     - [DecodePetCodeMessageFromBase64Response](#seerbp-petcode-server-v1-DecodePetCodeMessageFromBase64Response)
     - [EncodePetCodeMessageToBase64Request](#seerbp-petcode-server-v1-EncodePetCodeMessageToBase64Request)
@@ -123,7 +125,7 @@
 | ----- | ---- | ----- | ----------- |
 | id | [int32](#int32) |  | 刻印ID |
 | level | [int32](#int32) |  | 刻印等级 |
-| ability | [PetAbilityValue](#seerbp-petcode-v1-PetAbilityValue) | optional | 自定义刻印能力值，当该刻印数值与当前等级对应的数据不一致时需要设置该字段 （例如使用旧版刻印升级系统升级过的刻印具有随机数值） |
+| ability | [PetAbilityValue](#seerbp-petcode-v1-PetAbilityValue) | optional | 自定义刻印能力值，当该刻印没有升满时需要设置该字段 |
 | gem | [MintmarkInfo.Universal.GemItem](#seerbp-petcode-v1-MintmarkInfo-Universal-GemItem) | optional | 宝石信息 |
 
 
@@ -156,7 +158,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | type | [PetAbilityBonus.Type](#seerbp-petcode-v1-PetAbilityBonus-Type) |  | 能力加成类型 |
-| value | [PetAbilityBonus.Value](#seerbp-petcode-v1-PetAbilityBonus-Value) |  | 能力加成详情 |
+| value | [PetAbilityBonus.Value](#seerbp-petcode-v1-PetAbilityBonus-Value) |  | 能力加成值 |
 
 
 
@@ -265,10 +267,10 @@
 | id | [int32](#int32) |  | 精灵ID |
 | level | [int32](#int32) |  | 精灵等级 |
 | dv | [int32](#int32) |  | 精灵个体值 |
-| nature | [int32](#int32) |  | 精灵性格 |
+| nature | [int32](#int32) |  | 精灵性格，值为性格ID |
 | evs | [PetAbilityValue](#seerbp-petcode-v1-PetAbilityValue) |  | 精灵学习力 |
 | skills | [int32](#int32) | repeated | 精灵携带的技能 |
-| extra_hp | [int32](#int32) |  | 精灵额外体力上限 |
+| extra_hp | [int32](#int32) |  | **Deprecated.** 精灵额外体力上限，该字段已经废弃，请使用 PetAbilityBonus 中的 TYPE_BASEVALUE 类型来获取/设置精灵的额外体力上限。 调用方应检查该字段的值，如果非 0 则必须将其转换为 PetAbilityBonus 中一个全新的 TYPE_BASEVALUE 类型加成项，而不是与其他已有的加成项合并。 |
 | effects | [PetInfo.Effect](#seerbp-petcode-v1-PetInfo-Effect) | repeated | 精灵特效列表，根据effectInfo.status字段区分不同类型（特性/异能特质/魂印）的特效。<br> （在游戏内，这些特效都存放在同一个effectInfo数组中，这里采用相同的设计以确保游戏数据包和工具的双重兼容性） |
 | mintmarks | [MintmarkInfo](#seerbp-petcode-v1-MintmarkInfo) | repeated | 精灵装备的刻印 |
 | resistance | [ResistanceInfo](#seerbp-petcode-v1-ResistanceInfo) | optional | 精灵的抗性信息 |
@@ -365,7 +367,8 @@
 | TYPE_SUPER_NONO | 3 | 超能加成 |
 | TYPE_SOULMARK | 4 | 魂印加成 |
 | TYPE_AWAKEN | 5 | 神谕觉醒 |
-| TYPE_SPECIAL | 6 | 特殊加成 |
+| TYPE_SPECIAL | 6 | 特殊加成，对应加成详情面板中的“特殊加成”一栏 |
+| TYPE_BASEVALUE | 7 | 基础值加成，不显示在加成详情面板中的加成均属此类，例如雷伊/谱尼/灵神等特训，繁殖精灵二代加成等，也包括20点体力上限 |
 | TYPE_OTHER | 99 | 其他 |
 
 
@@ -410,7 +413,7 @@
 | SERVER_OFFICIAL | 1 | 官方服 |
 | SERVER_TEST | 2 | 测试服 |
 | SERVER_TAIWAN | 3 | 台服 |
-| SERVER_CLASSIC | 4 | 经典服 |
+| SERVER_CLASSIC | 4 | 怀旧服 |
 
 
  <!-- end enums -->
@@ -425,6 +428,36 @@
 <p align="right"><a href="#top">回到顶部</a></p>
 
 ## seerbp/petcode/server/v1/service.proto
+
+
+
+<a name="seerbp-petcode-server-v1-ConvertPetCodeMessageDeprecatedDataRequest"></a>
+
+### ConvertPetCodeMessageDeprecatedDataRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| pet_code_message | [seerbp.petcode.v1.PetCodeMessage](#seerbp-petcode-v1-PetCodeMessage) |  |  |
+
+
+
+
+
+
+<a name="seerbp-petcode-server-v1-ConvertPetCodeMessageDeprecatedDataResponse"></a>
+
+### ConvertPetCodeMessageDeprecatedDataResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| pet_code_message | [seerbp.petcode.v1.PetCodeMessage](#seerbp-petcode-v1-PetCodeMessage) |  |  |
+
+
+
 
 
 
@@ -503,6 +536,7 @@
 | ----------- | ------------ | ------------- | ------------|
 | EncodePetCodeMessageToBase64 | [EncodePetCodeMessageToBase64Request](#seerbp-petcode-server-v1-EncodePetCodeMessageToBase64Request) | [EncodePetCodeMessageToBase64Response](#seerbp-petcode-server-v1-EncodePetCodeMessageToBase64Response) |  |
 | DecodePetCodeMessageFromBase64 | [DecodePetCodeMessageFromBase64Request](#seerbp-petcode-server-v1-DecodePetCodeMessageFromBase64Request) | [DecodePetCodeMessageFromBase64Response](#seerbp-petcode-server-v1-DecodePetCodeMessageFromBase64Response) |  |
+| ConvertPetCodeMessageDeprecatedData | [ConvertPetCodeMessageDeprecatedDataRequest](#seerbp-petcode-server-v1-ConvertPetCodeMessageDeprecatedDataRequest) | [ConvertPetCodeMessageDeprecatedDataResponse](#seerbp-petcode-server-v1-ConvertPetCodeMessageDeprecatedDataResponse) |  |
 
  <!-- end services -->
 

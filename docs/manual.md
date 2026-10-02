@@ -968,7 +968,7 @@ new_code = to_base64(message)
 
 #### 处理弃用字段
 
-当字段被标记为废弃时，调用方应将旧字段合并到新字段中。SDK 提供了 `convert_deprecated_data()` 函数自动完成该转换：
+当字段被标记为废弃时，调用方应将其转换为新字段。SDK 提供了 `convert_deprecated_data()` 函数自动完成该转换：
 
 ```python
 from petcode import convert_deprecated_data, from_base64
@@ -976,7 +976,7 @@ from petcode import convert_deprecated_data, from_base64
 message = from_base64(code)       # 可能包含旧的 extra_hp 字段
 convert_deprecated_data(message)  # 原地转换
 
-# 转换后 extra_hp 为 0，数值已合并到 ability_bonus 的 TYPE_BASEVALUE 加成中
+# 转换后 extra_hp 为 0，并新增一个 ability_bonus 的 TYPE_BASEVALUE 加成项
 print(message.pets[0].extra_hp)
 ```
 

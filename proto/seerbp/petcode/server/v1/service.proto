@@ -46,6 +46,18 @@ service PetCodeService {
       operation_id: "decode_pet_code_message_from_base64"
     };
   }
+  rpc ConvertPetCodeMessageDeprecatedData(ConvertPetCodeMessageDeprecatedDataRequest) returns (ConvertPetCodeMessageDeprecatedDataResponse) {
+    option (google.api.http) = {
+      post: "/v1/convert_deprecated"
+      body: "*"
+    };
+    option (gnostic.openapi.v3.operation) = {
+      summary: "将 PetCodeMessage 中的弃用数据转换为新数据"
+      description: "将已废弃字段转换为当前推荐字段，例如将 PetInfo.extra_hp 转换为 PetAbilityBonus 中一个全新的 TYPE_BASEVALUE 类型体力加成项。"
+      tags: "转换"
+      operation_id: "convert_pet_code_message_deprecated_data"
+    };
+  }
 }
 
 message EncodePetCodeMessageToBase64Request {
@@ -61,5 +73,13 @@ message DecodePetCodeMessageFromBase64Request {
 }
 
 message DecodePetCodeMessageFromBase64Response {
+  petcode.v1.PetCodeMessage pet_code_message = 1;
+}
+
+message ConvertPetCodeMessageDeprecatedDataRequest {
+  petcode.v1.PetCodeMessage pet_code_message = 1;
+}
+
+message ConvertPetCodeMessageDeprecatedDataResponse {
   petcode.v1.PetCodeMessage pet_code_message = 1;
 }

@@ -7,6 +7,7 @@
 - [序列化函数](#序列化函数)
 - [辅助创建函数](#辅助创建函数)
 - [效果处理函数](#效果处理函数)
+- [弃用数据转换函数](#弃用数据转换函数)
 - [枚举值速查表](#枚举值速查表)
 
 ---
@@ -345,6 +346,37 @@ print(effect.args)    # [1, 5]
 | `SOULMARK` | 5 | 魂印 |
 | `TEAM_TECH` | 7 | 战队科技 |
 | `OTHER` | 99 | 其他 |
+
+---
+
+## 弃用数据转换函数
+
+弃用数据转换函数位于 `petcode` 模块。
+
+### `convert_deprecated_data(message: PetCodeMessage) -> PetCodeMessage`
+
+将消息中已废弃的字段转换为当前推荐的数据表示（原地修改并返回同一个对象）。
+
+目前会处理以下弃用字段：
+
+- `PetInfo.extra_hp`：转换为 `ability_bonus` 中一个全新的 `TYPE_BASEVALUE` 类型的 `hp` 固定加成项，不会与已有加成项合并。
+
+**参数**：
+
+- `message`: 待转换的 `PetCodeMessage` 对象
+
+**返回**：转换后的同一个 `PetCodeMessage` 对象
+
+**示例**：
+
+```python
+from petcode import convert_deprecated_data, from_base64
+
+message = from_base64(code)       # 可能包含旧的 extra_hp 字段
+convert_deprecated_data(message)  # 转换为 TYPE_BASEVALUE 加成
+
+print(message.pets[0].extra_hp)   # 0
+```
 
 ---
 

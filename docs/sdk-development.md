@@ -571,6 +571,9 @@ def param_to_effect(param: EffectParam) -> PetInfo.Effect:
 | 效果处理 | `get_effect_type()` |
 | 效果处理 | `effect_to_param()` |
 | 效果处理 | `param_to_effect()` |
+| 弃用数据转换 | `convert_deprecated_data()` / `convertDeprecatedData()` |
+
+> **弃用数据转换**：`convert_deprecated_data(message)` 将消息中已废弃的字段转换为新字段（原地修改并返回）。例如将 `PetInfo.extra_hp` 转换为 `PetAbilityBonus` 中一个全新的 `TYPE_BASEVALUE` 类型的体力加成项，不会与已有加成项合并。
 
 ---
 

@@ -1,6 +1,11 @@
 import { Code, ConnectError, type ConnectRouter } from "@connectrpc/connect";
-import { PetCodeService, type DecodePetCodeMessageFromBase64Request, type EncodePetCodeMessageToBase64Request } from "@seerbp/petcode-sdk/pb/server/v1/service_pb.js";
-import { fromBase64, toBase64 } from "@seerbp/petcode-sdk";
+import {
+  PetCodeService,
+  type ConvertPetCodeMessageDeprecatedDataRequest,
+  type DecodePetCodeMessageFromBase64Request,
+  type EncodePetCodeMessageToBase64Request,
+} from "@seerbp/petcode-sdk/pb/server/v1/service_pb.js";
+import { fromBase64, toBase64, convertDeprecatedData } from "@seerbp/petcode-sdk";
 import { PetCodeMessageSchema } from "@seerbp/petcode-sdk/pb/v1/message_pb.js";
 
 export default (router: ConnectRouter) =>
@@ -11,7 +16,7 @@ export default (router: ConnectRouter) =>
       }
       try {
         return {
-          base64: toBase64(PetCodeMessageSchema, req.petCodeMessage)
+          base64: toBase64(PetCodeMessageSchema, req.petCodeMessage),
         };
       } catch (error) {
         throw new ConnectError("invalid petCodeMessage", Code.InvalidArgument);
@@ -23,10 +28,24 @@ export default (router: ConnectRouter) =>
       }
       try {
         return {
-          petCodeMessage: fromBase64(PetCodeMessageSchema, req.base64)
+          petCodeMessage: fromBase64(PetCodeMessageSchema, req.base64),
         };
       } catch (error) {
         throw new ConnectError("invalid base64", Code.InvalidArgument);
+      }
+    },
+    async convertPetCodeMessageDeprecatedData(
+      req: ConvertPetCodeMessageDeprecatedDataRequest,
+    ) {
+      if (!req.petCodeMessage) {
+        throw new ConnectError("petCodeMessage is required", Code.InvalidArgument);
+      }
+      try {
+        return {
+          petCodeMessage: convertDeprecatedData(req.petCodeMessage),
+        };
+      } catch (error) {
+        throw new ConnectError("invalid petCodeMessage", Code.InvalidArgument);
       }
     },
   });

@@ -8,7 +8,13 @@ import {
   PetCodeMessage_DisplayMode,
   type PetCodeMessage,
 } from "@seerbp/petcode-sdk/pb/v1/message_pb.js";
-import { PetInfoSchema, MintmarkInfoSchema, type PetInfo } from "@seerbp/petcode-sdk/pb/v1/message_pb.js";
+import {
+  PetInfoSchema,
+  MintmarkInfoSchema,
+  PetAbilityBonusSchema,
+  PetAbilityBonus_Type,
+  type PetInfo,
+} from "@seerbp/petcode-sdk/pb/v1/message_pb.js";
 
 /**
  * 创建测试用的精灵信息
@@ -38,7 +44,7 @@ export const createTestMintmark = (abilityId: number) => {
  * 创建测试用的 PetCodeMessage
  */
 export const createTestPetCodeMessage = (
-  overrides?: Partial<PetCodeMessage>
+  overrides?: Partial<PetCodeMessage>,
 ): PetCodeMessage => {
   const defaultPet = createTestPet();
 
@@ -55,10 +61,10 @@ export const createTestPetCodeMessage = (
  * 创建包含多个精灵的测试消息
  */
 export const createTestPetCodeMessageWithMultiplePets = (
-  petCount: number
+  petCount: number,
 ): PetCodeMessage => {
   const pets = Array.from({ length: petCount }, (_, i) =>
-    createTestPet({ id: i + 1, level: 50 + i * 10 })
+    createTestPet({ id: i + 1, level: 50 + i * 10 }),
   );
 
   return create(PetCodeMessageSchema, {
@@ -81,3 +87,40 @@ export const createEmptyPetCodeMessage = (): PetCodeMessage => {
   });
 };
 
+/**
+ * 创建包含弃用字段（extraHp）的测试消息
+ */
+export const createTestPetCodeMessageWithExtraHp = (extraHp = 20): PetCodeMessage => {
+  return create(PetCodeMessageSchema, {
+    server: PetCodeMessage_Server.OFFICIAL,
+    displayMode: PetCodeMessage_DisplayMode.PVP,
+    pets: [create(PetInfoSchema, { id: 1, level: 100, extraHp })],
+    seerSet: {},
+  });
+};
+
+/**
+ * 创建同时包含弃用字段与既有 TYPE_BASEVALUE 加成的测试消息
+ */
+export const createTestPetCodeMessageWithExistingBaseValueBonus = (
+  extraHp = 20,
+): PetCodeMessage => {
+  return create(PetCodeMessageSchema, {
+    server: PetCodeMessage_Server.OFFICIAL,
+    displayMode: PetCodeMessage_DisplayMode.PVP,
+    pets: [
+      create(PetInfoSchema, {
+        id: 1,
+        level: 100,
+        extraHp,
+        abilityBonus: [
+          create(PetAbilityBonusSchema, {
+            type: PetAbilityBonus_Type.BASEVALUE,
+            value: { hp: { value: 5, percent: 10 } },
+          }),
+        ],
+      }),
+    ],
+    seerSet: {},
+  });
+};

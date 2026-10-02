@@ -7,11 +7,14 @@ import assert from "node:assert";
 import { createRouterTransport } from "@connectrpc/connect";
 import { Code, createClient } from "@connectrpc/connect";
 import { PetCodeService } from "@seerbp/petcode-sdk/pb/server/v1/service_pb.js";
+import { PetAbilityBonus_Type } from "@seerbp/petcode-sdk/pb/v1/message_pb.js";
 import routes from "../src/connect.js";
 import {
   createTestPetCodeMessage,
   createTestPetCodeMessageWithMultiplePets,
   createEmptyPetCodeMessage,
+  createTestPetCodeMessageWithExtraHp,
+  createTestPetCodeMessageWithExistingBaseValueBonus,
 } from "./helpers.js";
 
 /**
@@ -71,10 +74,14 @@ test("encodePetCodeMessageToBase64 - 缺少 petCodeMessage 时应该抛出错误
     });
     assert.fail("应该抛出错误");
   } catch (error: any) {
-    assert.strictEqual(error.code, Code.InvalidArgument, "错误码应该是 InvalidArgument");
+    assert.strictEqual(
+      error.code,
+      Code.InvalidArgument,
+      "错误码应该是 InvalidArgument",
+    );
     assert.ok(
       error.message.includes("petCodeMessage is required"),
-      "错误消息应该包含 'petCodeMessage is required'"
+      "错误消息应该包含 'petCodeMessage is required'",
     );
   }
 });
@@ -97,17 +104,17 @@ test("decodePetCodeMessageFromBase64 - 应该成功解码有效的 base64", asyn
   assert.strictEqual(
     decodeResponse.petCodeMessage.server,
     originalMessage.server,
-    "服务器类型应该匹配"
+    "服务器类型应该匹配",
   );
   assert.strictEqual(
     decodeResponse.petCodeMessage.displayMode,
     originalMessage.displayMode,
-    "显示模式应该匹配"
+    "显示模式应该匹配",
   );
   assert.strictEqual(
     decodeResponse.petCodeMessage.pets.length,
     originalMessage.pets.length,
-    "精灵数量应该匹配"
+    "精灵数量应该匹配",
   );
 });
 
@@ -129,7 +136,7 @@ test("decodePetCodeMessageFromBase64 - 应该正确解码多个精灵", async ()
   assert.strictEqual(
     decodeResponse.petCodeMessage.pets.length,
     5,
-    "应该解码出 5 个精灵"
+    "应该解码出 5 个精灵",
   );
 
   // 验证每个精灵的数据
@@ -138,16 +145,8 @@ test("decodePetCodeMessageFromBase64 - 应该正确解码多个精灵", async ()
     const originalPet = originalMessage.pets[i];
     assert.ok(decodedPet, `精灵 ${i} 应该存在`);
     assert.ok(originalPet, `原始精灵 ${i} 应该存在`);
-    assert.strictEqual(
-      decodedPet.id,
-      originalPet.id,
-      `精灵 ${i} 的 ID 应该匹配`
-    );
-    assert.strictEqual(
-      decodedPet.level,
-      originalPet.level,
-      `精灵 ${i} 的等级应该匹配`
-    );
+    assert.strictEqual(decodedPet.id, originalPet.id, `精灵 ${i} 的 ID 应该匹配`);
+    assert.strictEqual(decodedPet.level, originalPet.level, `精灵 ${i} 的等级应该匹配`);
   }
 });
 
@@ -160,10 +159,14 @@ test("decodePetCodeMessageFromBase64 - 缺少 base64 时应该抛出错误", asy
     });
     assert.fail("应该抛出错误");
   } catch (error: any) {
-    assert.strictEqual(error.code, Code.InvalidArgument, "错误码应该是 InvalidArgument");
+    assert.strictEqual(
+      error.code,
+      Code.InvalidArgument,
+      "错误码应该是 InvalidArgument",
+    );
     assert.ok(
       error.message.includes("base64 is required"),
-      "错误消息应该包含 'base64 is required'"
+      "错误消息应该包含 'base64 is required'",
     );
   }
 });
@@ -177,10 +180,14 @@ test("decodePetCodeMessageFromBase64 - 无效的 base64 应该抛出错误", asy
     });
     assert.fail("应该抛出错误");
   } catch (error: any) {
-    assert.strictEqual(error.code, Code.InvalidArgument, "错误码应该是 InvalidArgument");
+    assert.strictEqual(
+      error.code,
+      Code.InvalidArgument,
+      "错误码应该是 InvalidArgument",
+    );
     assert.ok(
       error.message.includes("invalid base64"),
-      "错误消息应该包含 'invalid base64'"
+      "错误消息应该包含 'invalid base64'",
     );
   }
 });
@@ -194,7 +201,11 @@ test("decodePetCodeMessageFromBase64 - 非 base64 字符串应该抛出错误", 
     });
     assert.fail("应该抛出错误");
   } catch (error: any) {
-    assert.strictEqual(error.code, Code.InvalidArgument, "错误码应该是 InvalidArgument");
+    assert.strictEqual(
+      error.code,
+      Code.InvalidArgument,
+      "错误码应该是 InvalidArgument",
+    );
   }
 });
 
@@ -218,11 +229,7 @@ test("完整流程 - 编码、解码、再编码应该保持一致", async () =>
   });
 
   // 两次编码的结果应该相同
-  assert.strictEqual(
-    encode1.base64,
-    encode2.base64,
-    "多次编码应该产生相同的结果"
-  );
+  assert.strictEqual(encode1.base64, encode2.base64, "多次编码应该产生相同的结果");
 });
 
 test("边界情况 - 空精灵列表的编码和解码", async () => {
@@ -239,15 +246,78 @@ test("边界情况 - 空精灵列表的编码和解码", async () => {
     base64: encodeResponse.base64,
   });
 
-  assert.strictEqual(
-    decodeResponse.petCodeMessage?.pets.length,
-    0,
-    "精灵列表应该为空"
-  );
+  assert.strictEqual(decodeResponse.petCodeMessage?.pets.length, 0, "精灵列表应该为空");
   assert.strictEqual(
     decodeResponse.petCodeMessage.server,
     emptyMessage.server,
-    "服务器类型应该匹配"
+    "服务器类型应该匹配",
   );
 });
 
+test("convertPetCodeMessageDeprecatedData - 应该将 extraHp 转换为 TYPE_BASEVALUE 加成", async () => {
+  const client = createTestClient();
+  const message = createTestPetCodeMessageWithExtraHp(20);
+
+  const response = await client.convertPetCodeMessageDeprecatedData({
+    petCodeMessage: message,
+  });
+
+  const pet = response.petCodeMessage?.pets[0];
+  assert.ok(pet, "应该返回精灵");
+  assert.strictEqual(pet.extraHp, 0, "extraHp 应该被清空");
+  assert.strictEqual(
+    pet.abilityBonus[0]?.type,
+    PetAbilityBonus_Type.BASEVALUE,
+    "加成类型应该是 TYPE_BASEVALUE",
+  );
+  assert.strictEqual(
+    pet.abilityBonus[0]?.value?.hp?.value,
+    20,
+    "体力固定加成应该是 20",
+  );
+});
+
+test("convertPetCodeMessageDeprecatedData - 即使已存在 TYPE_BASEVALUE 加成也应新增一项", async () => {
+  const client = createTestClient();
+  const message = createTestPetCodeMessageWithExistingBaseValueBonus(20);
+
+  const response = await client.convertPetCodeMessageDeprecatedData({
+    petCodeMessage: message,
+  });
+
+  const pet = response.petCodeMessage?.pets[0];
+  assert.ok(pet, "应该返回精灵");
+  assert.strictEqual(pet.extraHp, 0, "extraHp 应该被清空");
+  assert.strictEqual(pet.abilityBonus.length, 2, "应该在已有加成之外新增一项");
+  assert.strictEqual(pet.abilityBonus[0]?.value?.hp?.value, 5, "已有加成不应被修改");
+  assert.strictEqual(pet.abilityBonus[0]?.value?.hp?.percent, 10);
+  const created = pet.abilityBonus[1];
+  assert.strictEqual(
+    created?.type,
+    PetAbilityBonus_Type.BASEVALUE,
+    "新增加成类型应该是 TYPE_BASEVALUE",
+  );
+  assert.strictEqual(created?.value?.hp?.value, 20, "新增加成的体力固定值应该是 20");
+  assert.strictEqual(created?.value?.hp?.percent, undefined);
+});
+
+test("convertPetCodeMessageDeprecatedData - 缺少 petCodeMessage 时应该抛出错误", async () => {
+  const client = createTestClient();
+
+  try {
+    await client.convertPetCodeMessageDeprecatedData({
+      petCodeMessage: undefined,
+    });
+    assert.fail("应该抛出错误");
+  } catch (error: any) {
+    assert.strictEqual(
+      error.code,
+      Code.InvalidArgument,
+      "错误码应该是 InvalidArgument",
+    );
+    assert.ok(
+      error.message.includes("petCodeMessage is required"),
+      "错误消息应该包含 'petCodeMessage is required'",
+    );
+  }
+});

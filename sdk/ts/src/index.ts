@@ -1,8 +1,11 @@
-import { base64Decode, base64Encode } from '@bufbuild/protobuf/wire';
+import { base64Decode, base64Encode } from "@bufbuild/protobuf/wire";
 import {
   toBinary as schemaToBinary,
   fromBinary as schemaFromBinary,
-  type MessageShape, type DescMessage, toJson as schemaToJson, fromJson as schemaFromJson,
+  type MessageShape,
+  type DescMessage,
+  toJson as schemaToJson,
+  fromJson as schemaFromJson,
   type MessageJsonType,
 } from "@bufbuild/protobuf";
 import { gzip, ungzip } from "pako";
@@ -21,7 +24,10 @@ function decompressWithGzip(binary: Uint8Array) {
  * @param message - 消息对象
  * @returns 二进制数据
  */
-export function toBinary<T extends DescMessage>(schema: T, message: MessageShape<T>): Uint8Array {
+export function toBinary<T extends DescMessage>(
+  schema: T,
+  message: MessageShape<T>,
+): Uint8Array {
   return compressWithGzip(schemaToBinary(schema, message));
 }
 
@@ -31,7 +37,10 @@ export function toBinary<T extends DescMessage>(schema: T, message: MessageShape
  * @param binary - 二进制数据
  * @returns 消息对象
  */
-export function fromBinary<T extends DescMessage>(schema: T, binary: Uint8Array): MessageShape<T> {
+export function fromBinary<T extends DescMessage>(
+  schema: T,
+  binary: Uint8Array,
+): MessageShape<T> {
   return schemaFromBinary(schema, decompressWithGzip(binary));
 }
 
@@ -41,7 +50,10 @@ export function fromBinary<T extends DescMessage>(schema: T, binary: Uint8Array)
  * @param message - 消息对象
  * @returns Base64 字符串
  */
-export function toBase64<T extends DescMessage>(schema: T, message: MessageShape<T>): string {
+export function toBase64<T extends DescMessage>(
+  schema: T,
+  message: MessageShape<T>,
+): string {
   return base64Encode(toBinary(schema, message));
 }
 
@@ -51,7 +63,10 @@ export function toBase64<T extends DescMessage>(schema: T, message: MessageShape
  * @param base64 - Base64 字符串
  * @returns 消息对象
  */
-export function fromBase64<T extends DescMessage>(schema: T, base64: string): MessageShape<T> {
+export function fromBase64<T extends DescMessage>(
+  schema: T,
+  base64: string,
+): MessageShape<T> {
   return fromBinary(schema, base64Decode(base64));
 }
 
@@ -61,7 +76,10 @@ export function fromBase64<T extends DescMessage>(schema: T, base64: string): Me
  * @param message - 消息对象
  * @returns JSON 对象
  */
-export function toObject<T extends DescMessage>(schema: T, message: MessageShape<T>): MessageJsonType<T> {
+export function toObject<T extends DescMessage>(
+  schema: T,
+  message: MessageShape<T>,
+): MessageJsonType<T> {
   return schemaToJson(schema, message) as MessageJsonType<T>;
 }
 
@@ -71,8 +89,12 @@ export function toObject<T extends DescMessage>(schema: T, message: MessageShape
  * @param json - JSON 对象
  * @returns 消息对象
  */
-export function fromObject<T extends DescMessage>(schema: T, json: MessageJsonType<T>): MessageShape<T> {
+export function fromObject<T extends DescMessage>(
+  schema: T,
+  json: MessageJsonType<T>,
+): MessageShape<T> {
   return schemaFromJson(schema, json) as MessageShape<T>;
 }
 
 export { createPetCodeMessage } from "./create_and_read.js";
+export { convertDeprecatedData } from "./deprecated.js";
